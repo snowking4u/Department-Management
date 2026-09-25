@@ -1,38 +1,20 @@
+document.addEventListener("DOMContentLoaded", function () {
 
+    const roleButtons = document.querySelectorAll(".role");
 
-        function togglePassword() {
+    roleButtons.forEach(function (button) {
 
-            const password =
-                document.getElementById("password");
+        button.addEventListener("click", function () {
 
-            if (password.type === "password") {
-
-                password.type = "text";
-
-            } else {
-
-                password.type = "password";
-
-            }
-
-        }
-
-
-        const roleButtons =
-            document.querySelectorAll(".role-btn");
-
-        roleButtons.forEach(button => {
-
-            button.addEventListener("click", () => {
-
-                roleButtons.forEach(btn => {
-                    btn.classList.remove("active");
-                });
-
-                button.classList.add("active");
-
+            roleButtons.forEach(function (btn) {
+                btn.classList.remove("active");
             });
+
+           
+            this.classList.add("active");
 
         });
 
+    });
 
+});
