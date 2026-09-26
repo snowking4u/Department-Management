@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HOD Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>GPH</h2>
+            <p>Department Management System</p>
+        </div>
+
+        <nav>
+
+            <a href="#" class="active">
+                Dashboard
+            </a>
+
+            <a href="#">
+                Student Management
+            </a>
+
+            <a href="#">
+                Faculty Management
+            </a>
+
+            <a href="#">
+                Course / Subject Management
+            </a>
+
+            <a href="#">
+                Timetable Management
+            </a>
+
+            <a href="#">
+                Attendance Overview
+            </a>
+
+            <a href="#">
+                Notice Management
+            </a>
+
+            <a href="#">
+                Events Management
+            </a>
+
+            <a href="#">
+                Leave / Request Approval
+            </a>
+
+            <a href="#">
+                Reports & Analytics
+            </a>
+
+        </nav>
+
+        <div class="logout">
+            <a href="#">Logout</a>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>HOD Dashboard</h1>
+                <p>Computer Engineering Department</p>
+            </div>
+
+            <div class="profile">
+                <div class="profile-icon">H</div>
+
+                <div>
+                    <strong>HOD</strong>
+                    <small>Head of Department</small>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- WELCOME SECTION -->
+        <section class="welcome">
+
+            <h2>Welcome, HOD</h2>
+
+            <p>
+                Monitor, manage, approve and analyze department activities
+                from one place.
+            </p>
+
+        </section>
+
+
+        <!-- OVERVIEW CARDS -->
+        <section class="overview">
+
+            <div class="card">
+                <h3>Total Students</h3>
+                <p class="number">180</p>
+                <span>Department Students</span>
+            </div>
+
+            <div class="card">
+                <h3>Total Faculty</h3>
+                <p class="number">12</p>
+                <span>Department Faculty</span>
+            </div>
+
+            <div class="card">
+                <h3>Attendance</h3>
+                <p class="number">87%</p>
+                <span>Overall Attendance</span>
+            </div>
+
+            <div class="card">
+                <h3>Notices</h3>
+                <p class="number">5</p>
+                <span>Published Notices</span>
+            </div>
+
+            <div class="card">
+                <h3>Events</h3>
+                <p class="number">3</p>
+                <span>Upcoming Events</span>
+            </div>
+
+        </section>
+
+
+        <!-- QUICK ACTIONS -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+                <h2>Quick Actions</h2>
+            </div>
+
+            <div class="quick-actions">
+
+                <button>Add Student</button>
+
+                <button>Add Faculty</button>
+
+                <button>Manage Subjects</button>
+
+                <button>Create Timetable</button>
+
+                <button>Publish Notice</button>
+
+                <button>Add Event</button>
+
+            </div>
+
+        </section>
+
+
+        <!-- RECENT ACTIVITIES -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+                <h2>Recent Activities</h2>
+            </div>
+
+            <div class="activity-list">
+
+                <div class="activity">
+                    <strong>New student added</strong>
+                    <span>Student Management</span>
+                </div>
+
+                <div class="activity">
+                    <strong>New notice published</strong>
+                    <span>Notice Management</span>
+                </div>
+
+                <div class="activity">
+                    <strong>Faculty workload updated</strong>
+                    <span>Faculty Management</span>
+                </div>
+
+                <div class="activity">
+                    <strong>Timetable updated</strong>
+                    <span>Timetable Management</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- HOD RESPONSIBILITIES -->
+        <section class="dashboard-section">
+
+            <div class="section-header">
+                <h2>HOD Responsibilities</h2>
+            </div>
+
+            <div class="responsibilities">
+
+                <div>
+                    <h3>Monitor</h3>
+                    <p>
+                        Monitor students, faculty, attendance and
+                        department activities.
+                    </p>
+                </div>
+
+                <div>
+                    <h3>Manage</h3>
+                    <p>
+                        Manage students, faculty, subjects,
+                        timetable, notices and events.
+                    </p>
+                </div>
+
+                <div>
+                    <h3>Approve</h3>
+                    <p>
+                        Review and approve student and faculty
+                        requests.
+                    </p>
+                </div>
+
+                <div>
+                    <h3>Analyze</h3>
+                    <p>
+                        Analyze attendance, academic performance
+                        and faculty workload.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
