@@ -1,40 +1,28 @@
-from flask import Flask, session, redirect, url_for, render_template
+from flask import Flask ,render_template , session
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 @app.route("/")
 def login():
-    return "<p>this is login page!</p>"
-    
+    return render_template("login.html")    
 
 @app.route("/faculty")
 def faculty():
-    # HOD details are read from the session when they are available.
     hod_name = session.get("hod_name")
     hod_email = session.get("hod_email")
 
-    # These values need a database/model, so no placeholder data is created.
-    total_students = None
-    total_faculty = None
-    attendance_summary = None
-    notices = []
-    events = []
+    
 
-    # The existing project folder is named "tenplates".
-    app.template_folder = "tenplates"
-
-    return render_template(
-        "index.html",
-        hod_name=hod_name,
-        hod_email=hod_email,
-        total_students=total_students,
-        total_faculty=total_faculty,
-        attendance_summary=attendance_summary,
-        notices=notices,
-        events=events,
-    )
+    return render_template("hod_dashboard.html")
     
     
 if __name__ == "__main__":
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()
+    app.run(host="0.0.0.0", port=5000, debug=True)

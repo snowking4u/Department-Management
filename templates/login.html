@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Department Management System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+
+</head>
+
+
+<body>
+
+    <div class="login-page">
+
+
+        <!-- HEADER -->
+
+        <header class="header">
+
+            <div class="college-info">
+
+                <div class="logo">
+
+                </div>
+
+                <div class="college-name">
+
+                    <h1>Government Polytechnic Hamirpur</h1>
+
+                    <p>
+                        SKILL | KNOWLEDGE | BETTER TOMORROW
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="tagline">
+
+                <span>Learn Today</span>
+                <span>Build Tomorrow</span>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- MAIN -->
+
+        <main class="main-content">
+
+
+            <!-- LOGIN CARD -->
+
+            <div class="login-card">
+
+
+                <div class="login-heading">
+
+                    <h2>Welcome</h2>
+
+                    <p>
+                        Sign in to your Department Management System
+                    </p>
+
+                    <div class="heading-line"></div>
+
+                </div>
+
+
+
+                <!-- ROLE -->
+
+                <div class="role-selection">
+
+                    <button type="button" class="role active">
+                        HOD
+                    </button>
+
+                    <button type="button" class="role">
+                        Faculty
+                    </button>
+
+                    <button type="button" class="role">
+                        Student
+                    </button>
+
+                </div>
+
+
+
+                <!-- FORM -->
+
+                <form method="POST" class="login-form">
+
+
+                    <div class="input-group">
+
+                        <label for="email">
+                            Email or ID
+                        </label>
+
+                        <input type="text" id="email" name="email" placeholder="Enter Email or ID" required>
+
+                    </div>
+
+
+
+                    <div class="input-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+
+                    </div>
+
+
+
+                    <div class="login-options">
+
+                        <label>
+
+                            <input type="checkbox" name="remember">
+
+                            Remember me
+
+                        </label>
+
+
+                        <a href="#">
+                            Forgot Password?
+                        </a>
+
+                    </div>
+
+
+
+                    <button type="submit" class="login-button">
+
+                        Login →
+
+                    </button>
+
+
+                </form>
+
+
+
+                <div class="login-footer">
+
+                    <div class="divider">
+
+                        <span></span>
+
+                        <p>OR</p>
+
+                        <span></span>
+
+                    </div>
+
+
+                    <p>
+                        New to the system?
+                        Contact your department administrator.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+        </main>
+
+
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            2026 Government Polytechnic Hamirpur.
+            All Rights Reserved.
+
+        </footer>
+
+
+    </div>
+
+</body>
+
+</html>
