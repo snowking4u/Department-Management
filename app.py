@@ -1,10 +1,16 @@
 from flask import Flask ,render_template , session
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
+if os.environ.get("VERCEL") != "1":
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 app.config["SECRET_KEY"] = "Oggy&Jack"
 
 db = SQLAlchemy(app)
