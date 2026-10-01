@@ -1,1 +1,12 @@
-instance/database.db
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+
+# Flask instance/database
+instance/
+*.db
