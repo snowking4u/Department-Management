@@ -1,20 +1,36 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* Role Selection */
 
-    const roleButtons = document.querySelectorAll(".role");
+let roles = document.querySelectorAll(".role");
 
-    roleButtons.forEach(function (button) {
+roles.forEach(function(role) {
 
-        button.addEventListener("click", function () {
+    role.addEventListener("click", function() {
 
-            roleButtons.forEach(function (btn) {
-                btn.classList.remove("active");
-            });
-
-           
-            this.classList.add("active");
-
+        roles.forEach(function(item) {
+            item.classList.remove("active");
         });
+
+        role.classList.add("active");
 
     });
 
 });
+
+
+/* Show / Hide Password */
+
+function showPassword() {
+
+    let password = document.getElementById("password");
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+    } else {
+
+        password.type = "password";
+
+    }
+
+}
