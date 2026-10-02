@@ -2,141 +2,152 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login | Department Management System</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
 </head>
-
 
 <body>
 
     <div class="login-page">
 
-
         <!-- HEADER -->
-
         <header class="header">
 
             <div class="college-info">
 
-                <div class="logo">
-
-                </div>
+                <div class="logo"></div>
 
                 <div class="college-name">
-
                     <h1>Government Polytechnic Hamirpur</h1>
 
                     <p>
                         SKILL | KNOWLEDGE | BETTER TOMORROW
                     </p>
-
                 </div>
 
             </div>
 
-
             <div class="tagline">
-
                 <span>Learn Today</span>
                 <span>Build Tomorrow</span>
-
             </div>
 
         </header>
 
 
-
         <!-- MAIN -->
-
         <main class="main-content">
-
-
-            <!-- LOGIN CARD -->
 
             <div class="login-card">
 
-
+                <!-- LOGIN TITLE -->
                 <div class="login-heading">
 
-                    <h2>Welcome</h2>
+                    <h2>Welcome Back!</h2>
 
                     <p>
-                        Sign in to your Department Management System
+                        Login to your Department Management System
                     </p>
 
-                    <div class="heading-line"></div>
-
                 </div>
-
 
 
                 <!-- ROLE -->
+                <div class="role-title">
+                    Select Your Role
+                </div>
 
                 <div class="role-selection">
 
-                    <button type="button" class="role active">
-                        HOD
+                    <button class="role active" type="button">
+                       
+                        <span>HOD</span>
                     </button>
 
-                    <button type="button" class="role">
-                        Faculty
+                    <button class="role" type="button">
+                      
+                        <span>Faculty</span>
                     </button>
 
-                    <button type="button" class="role">
-                        Student
+                    <button class="role" type="button">
+                        
+                        <span>Student</span>
                     </button>
 
                 </div>
 
 
-
-                <!-- FORM -->
-
+                <!-- LOGIN FORM -->
                 <form method="POST" class="login-form">
 
-
+                    <!-- EMAIL -->
                     <div class="input-group">
 
                         <label for="email">
                             Email or ID
                         </label>
 
-                        <input type="text" id="email" name="email" placeholder="Enter Email or ID" required>
+                        <div class="input-box">
+
+                            <span class="input-icon">✉</span>
+
+                            <input
+                                type="text"
+                                id="email"
+                                name="email"
+                                placeholder="Enter your Email or ID"
+                                required
+                            >
+
+                        </div>
 
                     </div>
 
 
-
+                    <!-- PASSWORD -->
                     <div class="input-group">
 
                         <label for="password">
                             Password
                         </label>
 
-                        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+                        <div class="input-box">
+
+                            <span class="input-icon">🔒</span>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="show-password"
+                                onclick="showPassword()"
+                            >
+                                👁
+                            </button>
+
+                        </div>
 
                     </div>
 
 
-
+                    <!-- OPTIONS -->
                     <div class="login-options">
 
                         <label>
-
                             <input type="checkbox" name="remember">
-
                             Remember me
-
                         </label>
-
 
                         <a href="#">
                             Forgot Password?
@@ -145,30 +156,23 @@
                     </div>
 
 
-
+                    <!-- LOGIN BUTTON -->
                     <button type="submit" class="login-button">
-
-                        Login →
-
+                        Login
+                        <span>→</span>
                     </button>
-
 
                 </form>
 
 
-
+                <!-- FOOTER -->
                 <div class="login-footer">
 
                     <div class="divider">
-
                         <span></span>
-
                         <p>OR</p>
-
                         <span></span>
-
                     </div>
-
 
                     <p>
                         New to the system?
@@ -177,25 +181,48 @@
 
                 </div>
 
-
             </div>
 
         </main>
 
 
+        <!-- FEATURES -->
+        <section class="features">
+
+            <div class="feature">
+                <div class="feature-icon">🎓</div>
+                <p>Quality<br>Education</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">👥</div>
+                <p>Skilled<br>Professionals</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">⚙</div>
+                <p>Better<br>Opportunities</p>
+            </div>
+
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <p>Stronger<br>Nation</p>
+            </div>
+
+        </section>
 
 
         <!-- FOOTER -->
-
         <footer class="footer">
-
-            2026 Government Polytechnic Hamirpur.
+            2025 Government Polytechnic Hamirpur.
             All Rights Reserved.
-
         </footer>
 
-
     </div>
+
+
+    <!-- JAVASCRIPT -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
 </body>
 
