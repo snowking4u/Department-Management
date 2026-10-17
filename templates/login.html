@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,10 +25,7 @@
 
                 <div class="college-name">
                     <h1>Government Polytechnic Hamirpur</h1>
-
-                    <p>
-                        SKILL | KNOWLEDGE | BETTER TOMORROW
-                    </p>
+                    <p>SKILL | KNOWLEDGE | BETTER TOMORROW</p>
                 </div>
 
             </div>
@@ -39,7 +37,6 @@
 
         </header>
 
-
         <!-- MAIN -->
         <main class="main-content">
 
@@ -47,50 +44,52 @@
 
                 <!-- LOGIN TITLE -->
                 <div class="login-heading">
-
                     <h2>Welcome Back!</h2>
-
-                    <p>
-                        Login to your Department Management System
-                    </p>
-
+                    <p>Login to your Department Management System</p>
                 </div>
 
-
-                <!-- ROLE -->
+                <!-- ROLE SELECTION -->
                 <div class="role-title">
                     Select Your Role
                 </div>
 
                 <div class="role-selection">
 
-                    <button class="role active" type="button">
-                       
+                    <button class="role active"
+                            type="button"
+                            data-role="HOD">
                         <span>HOD</span>
                     </button>
 
-                    <button class="role" type="button">
-                      
+                    <button class="role"
+                            type="button"
+                            data-role="Faculty">
                         <span>Faculty</span>
                     </button>
 
-                    <button class="role" type="button">
-                        
+                    <button class="role"
+                            type="button"
+                            data-role="Student">
                         <span>Student</span>
                     </button>
 
                 </div>
 
-
                 <!-- LOGIN FORM -->
                 <form method="POST" class="login-form">
+
+                    <!-- SELECTED ROLE -->
+                    <input
+                        type="hidden"
+                        name="role"
+                        id="selected-role"
+                        value="HOD"
+                    >
 
                     <!-- EMAIL -->
                     <div class="input-group">
 
-                        <label for="email">
-                            Email or ID
-                        </label>
+                        <label for="email">Email or ID</label>
 
                         <div class="input-box">
 
@@ -101,6 +100,7 @@
                                 id="email"
                                 name="email"
                                 placeholder="Enter your Email or ID"
+                                autocomplete="username"
                                 required
                             >
 
@@ -108,13 +108,10 @@
 
                     </div>
 
-
                     <!-- PASSWORD -->
                     <div class="input-group">
 
-                        <label for="password">
-                            Password
-                        </label>
+                        <label for="password">Password</label>
 
                         <div class="input-box">
 
@@ -125,6 +122,7 @@
                                 id="password"
                                 name="password"
                                 placeholder="Enter your password"
+                                autocomplete="current-password"
                                 required
                             >
 
@@ -132,6 +130,7 @@
                                 type="button"
                                 class="show-password"
                                 onclick="showPassword()"
+                                aria-label="Show or hide password"
                             >
                                 👁
                             </button>
@@ -139,7 +138,6 @@
                         </div>
 
                     </div>
-
 
                     <!-- OPTIONS -->
                     <div class="login-options">
@@ -155,7 +153,6 @@
 
                     </div>
 
-
                     <!-- LOGIN BUTTON -->
                     <button type="submit" class="login-button">
                         Login
@@ -163,7 +160,6 @@
                     </button>
 
                 </form>
-
 
                 <!-- FOOTER -->
                 <div class="login-footer">
@@ -184,7 +180,6 @@
             </div>
 
         </main>
-
 
         <!-- FEATURES -->
         <section class="features">
@@ -211,7 +206,6 @@
 
         </section>
 
-
         <!-- FOOTER -->
         <footer class="footer">
             2025 Government Polytechnic Hamirpur.
@@ -220,10 +214,8 @@
 
     </div>
 
-
     <!-- JAVASCRIPT -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 
 </body>
-
 </html>
