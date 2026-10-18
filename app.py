@@ -6,10 +6,7 @@ import re
 
 app = Flask(__name__)
 
-if os.environ.get("VERCEL") != "1":
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-else:
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
