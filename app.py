@@ -43,10 +43,17 @@ class User(db.Model):
     department = db.Column(db.String(100), nullable=True)
 
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
-        return "Registration backend is ready. Submit registration data with a POST request."
+        requested_role = request.args.get("role", "student").strip().lower()
+        role = "hod" if requested_role == "admin" else requested_role
+
+        if role not in {"student", "faculty", "hod"}:
+            role = "student"
+
+        return render_template("registration.html", selected_role=role)
 
     name = request.form.get("name", "").strip()
     email = request.form.get("email", "").strip().lower()
@@ -89,7 +96,7 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
-    return "Account registered successfully.", 201
+    return render_template("registration.html" , users=user)
 
     
 if __name__ == "__main__":

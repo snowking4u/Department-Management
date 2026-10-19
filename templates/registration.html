@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d47a1">
+    <title>Add {{ selected_role|title }} | Department Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registration.css') }}">
+</head>
+
+<body>
+    <div class="registration-page">
+        <aside class="registration-aside" aria-label="Registration information">
+            <a class="brand" href="{{ url_for('hod_dashboard') }}" aria-label="Go to HOD dashboard">
+                <span class="brand-mark">GPH</span>
+                <span>
+                    <strong>Department Management</strong>
+                    <small>Government Polytechnic Hamirpur</small>
+                </span>
+            </a>
+
+            <div class="aside-copy">
+                <span class="eyebrow">HOD CONTROL PANEL</span>
+                <h1>Build your department, one account at a time.</h1>
+                <p>Create secure accounts for students, faculty, and department heads from one simple workspace.</p>
+            </div>
+
+            <ol class="setup-steps">
+                <li><span>1</span><div><strong>Choose account type</strong><small>Select who you are adding</small></div></li>
+                <li><span>2</span><div><strong>Add essential details</strong><small>Enter only the information needed</small></div></li>
+                <li><span>3</span><div><strong>Create access</strong><small>Set a secure password and save</small></div></li>
+            </ol>
+
+            <p class="aside-footer">Need help? Contact the department system administrator.</p>
+        </aside>
+
+        <main class="registration-main">
+            <header class="registration-header">
+                <div>
+                    <p class="breadcrumb"><a href="{{ url_for('hod_dashboard') }}">HOD Dashboard</a><span>/</span> Account registration</p>
+                    <h2>Add a new {{ selected_role|title }}</h2>
+                </div>
+                <a class="back-link" href="{{ url_for('hod_dashboard') }}">← Back to dashboard</a>
+            </header>
+
+            <section class="registration-card" aria-labelledby="form-title">
+                <div class="card-heading">
+                    <div class="account-icon {{ selected_role }}" aria-hidden="true">
+                        {% if selected_role == 'student' %}S{% elif selected_role == 'faculty' %}F{% else %}H{% endif %}
+                    </div>
+                    <div>
+                        <p class="eyebrow">NEW {{ selected_role|upper }} ACCOUNT</p>
+                        <h3 id="form-title">
+                            {% if selected_role == 'student' %}Student registration{% elif selected_role == 'faculty' %}Faculty registration{% else %}HOD registration{% endif %}
+                        </h3>
+                        <p>
+                            {% if selected_role == 'student' %}Add enrolment details so the student can access their department services.
+                            {% elif selected_role == 'faculty' %}Set up a faculty account to manage classes, attendance, and academic work.
+                            {% else %}Create a Head of Department account with authorised administrative access.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <nav class="role-switcher" aria-label="Account type">
+                    <a href="{{ url_for('register', role='student') }}" class="{% if selected_role == 'student' %}selected{% endif %}">
+                        <span class="role-letter">S</span> Student
+                    </a>
+                    <a href="{{ url_for('register', role='faculty') }}" class="{% if selected_role == 'faculty' %}selected{% endif %}">
+                        <span class="role-letter">F</span> Faculty
+                    </a>
+                    <a href="{{ url_for('register', role='hod') }}" class="{% if selected_role == 'hod' %}selected{% endif %}">
+                        <span class="role-letter">H</span> HOD
+                    </a>
+                </nav>
+
+                <form class="registration-form" method="POST" action="{{ url_for('register') }}" novalidate>
+                    <input type="hidden" name="role" value="{{ selected_role }}">
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="name">Full name <span aria-hidden="true">*</span></label>
+                            <input type="text" id="name" name="name" placeholder="e.g. Ananya Sharma" autocomplete="name" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="email">Official email <span aria-hidden="true">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="name@college.edu.in" autocomplete="email" required>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label for="department">Department <span aria-hidden="true">*</span></label>
+                            <select id="department" name="department" required>
+                                <option value="" selected disabled>Select department</option>
+                                <option value="Computer Engineering">Computer Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Applied Sciences">Applied Sciences</option>
+                            </select>
+                        </div>
+
+                        {% if selected_role == 'student' %}
+                        <div class="field">
+                            <label for="roll_number">Roll number <span aria-hidden="true">*</span></label>
+                            <input type="text" id="roll_number" name="roll_number" placeholder="e.g. 23CSE014" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="semester">Current semester <span aria-hidden="true">*</span></label>
+                            <select id="semester" name="semester" required>
+                                <option value="" selected disabled>Select semester</option>
+                                {% for number in range(1, 9) %}<option value="{{ number }}">Semester {{ number }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        {% if selected_role == 'hod' %}
+                        <div class="field field-wide access-key-field">
+                            <label for="hod_access_key">HOD access key <span aria-hidden="true">*</span></label>
+                            <div class="password-control">
+                                <input type="password" id="hod_access_key" name="hod_access_key" placeholder="Enter the administrator-provided key" autocomplete="off" required>
+                                <button type="button" class="visibility-toggle" data-password-toggle="hod_access_key" aria-label="Show HOD access key">Show</button>
+                            </div>
+                            <small>This verification key is provided by the system administrator.</small>
+                        </div>
+                        {% endif %}
+
+                        <div class="field">
+                            <label for="password">Create password <span aria-hidden="true">*</span></label>
+                            <div class="password-control">
+                                <input type="password" id="password" name="password" placeholder="Minimum 8 characters" autocomplete="new-password" minlength="8" required>
+                                <button type="button" class="visibility-toggle" data-password-toggle="password" aria-label="Show password">Show</button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="confirm_password">Confirm password <span aria-hidden="true">*</span></label>
+                            <div class="password-control">
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" autocomplete="new-password" minlength="8" required>
+                                <button type="button" class="visibility-toggle" data-password-toggle="confirm_password" aria-label="Show password confirmation">Show</button>
+                            </div>
+                            <small class="validation-message" id="password-message" aria-live="polite"></small>
+                        </div>
+                    </div>
+
+                    {% if selected_role == 'hod' %}
+                    <div class="security-note"><span aria-hidden="true">!</span> HOD accounts have elevated access. Verify the department and email address before creating this account.</div>
+                    {% endif %}
+
+                    <div class="form-footer">
+                        <p><span aria-hidden="true">⌁</span> Account details are visible only to authorised department staff.</p>
+                        <div class="form-actions">
+                            <a class="cancel-button" href="{{ url_for('hod_dashboard') }}">Cancel</a>
+                            <button type="submit" class="submit-button">Create {{ selected_role|title }} Account <span aria-hidden="true">→</span></button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/registration.js') }}"></script>
+</body>
+
+</html>
