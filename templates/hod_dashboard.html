@@ -22,15 +22,15 @@
 
         <nav>
 
-            <a href="#" class="active">
+            <a href="{{ url_for('hod_dashboard') }}" class="active">
                 Dashboard
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('student_management') }}">
                 Student Management
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('faculty') }}">
                 Faculty Management
             </a>
 
@@ -65,7 +65,7 @@
         </nav>
 
         <div class="logout">
-            <a href="#">Logout</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
         </div>
 
     </aside>
@@ -83,10 +83,10 @@
             </div>
 
             <div class="profile">
-                <div class="profile-icon">H</div>
+                <div class="profile-icon">{{ (session.get('user_name', 'HOD')|first)|upper }}</div>
 
                 <div>
-                    <strong>HOD</strong>
+                    <strong>{{ session.get('user_name', 'HOD') }}</strong>
                     <small>Head of Department</small>
                 </div>
             </div>
@@ -97,7 +97,7 @@
         <!-- WELCOME SECTION -->
         <section class="welcome">
 
-            <h2>Welcome, HOD</h2>
+            <h2>Welcome, {{ session.get('user_name', 'HOD') }}</h2>
 
             <p>
                 Monitor, manage, approve and analyze department activities

@@ -75,6 +75,12 @@
 
                 </div>
 
+                {% if error %}
+                <div class="login-error-alert" style="background-color: #fee2e2; border: 1px solid #f87171; color: #b91c1c; padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; text-align: center; font-weight: 500;">
+                    {{ error }}
+                </div>
+                {% endif %}
+
                 <!-- LOGIN FORM -->
                 <form method="POST" class="login-form">
 

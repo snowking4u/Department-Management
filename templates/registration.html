@@ -173,8 +173,8 @@
             <nav class="dashboard-nav">
                 <a href="{{ url_for('hod_dashboard') }}">Dashboard</a>
                 <a href="#" class="active">Account Registration</a>
-                <a href="#">Student Management</a>
-                <a href="#">Faculty Management</a>
+                <a href="{{ url_for('student_management') }}">Student Management</a>
+                <a href="{{ url_for('faculty') }}">Faculty Management</a>
                 <a href="#">Course / Subject Management</a>
                 <a href="#">Timetable Management</a>
                 <a href="#">Attendance Overview</a>
@@ -185,7 +185,7 @@
             </nav>
 
             <div class="dashboard-logout">
-                <a href="#">Logout</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
             </div>
         </aside>
 
@@ -235,6 +235,17 @@
                         <span class="role-letter">H</span> HOD
                     </a>
                 </nav>
+
+                {% if error %}
+                <div class="registration-alert error" style="background: #fef2f2; border: 1px solid #f87171; color: #b91c1c; padding: 12px 16px; border-radius: 8px; margin: 18px 0; font-weight: 500;">
+                    ⚠ {{ error }}
+                </div>
+                {% endif %}
+                {% if success %}
+                <div class="registration-alert success" style="background: #f0fdf4; border: 1px solid #4ade80; color: #15803d; padding: 12px 16px; border-radius: 8px; margin: 18px 0; font-weight: 500;">
+                    ✓ {{ success }}
+                </div>
+                {% endif %}
 
                 <form class="registration-form" method="POST" action="{{ url_for('register') }}" novalidate>
                     <input type="hidden" name="role" value="{{ selected_role }}">

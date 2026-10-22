@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management | GPH</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/student_management.css') }}">
+</head>
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="logo">GPH</div>
+            <div><h2>Department</h2><p>Management System</p></div>
+        </div>
+
+        <nav>
+            <a href="{{ url_for('hod_dashboard') }}">⌂ &nbsp; Dashboard</a>
+            <a class="active" href="{{ url_for('student_management') }}">♟ &nbsp; Student Management</a>
+            <a href="{{ url_for('faculty') }}">♙ &nbsp; Faculty Management</a>
+            <a href="#">▤ &nbsp; Course / Subjects</a>
+            <a href="#">▦ &nbsp; Timetable</a>
+            <a href="#">☑ &nbsp; Attendance</a>
+            <a href="#">♧ &nbsp; Notices</a>
+            <a href="#">▣ &nbsp; Events</a>
+            <a href="{{ url_for('logout') }}">⎋ &nbsp; Logout</a>
+        </nav>
+
+        <div class="college">
+            <strong>Government Polytechnic</strong>
+            <p>Hamirpur (H.P.)</p>
+            <small>Learn · Build · Grow</small>
+        </div>
+    </aside>
+
+    <main class="main">
+
+        <header class="topbar">
+            <span>COMPUTER ENGINEERING DEPARTMENT</span>
+            <div class="profile">
+                <span class="avatar">{{ (session.get('user_name', 'HOD')|first)|upper }}</span>
+                <span>{{ session.get('user_name', 'HOD') }}</span>
+                <a href="{{ url_for('logout') }}" style="color: #fff; margin-left: 12px; font-size: 13px; text-decoration: none; opacity: 0.9;">Logout</a>
+            </div>
+        </header>
+
+        <section class="page-heading">
+            <div>
+                <p class="eyebrow">STUDENT RECORDS & ACADEMICS</p>
+                <h1>Student Management</h1>
+                <p class="subtitle">
+                    Manage student profiles, academics, attendance and finances.
+                </p>
+            </div>
+            <div class="course-badge">
+                <span class="course-icon">✦</span>
+                <div><strong>3-Year Diploma</strong>
+                <p>6 Semesters · Lateral Entry</p></div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <article class="stat-card">
+                <span class="stat-icon blue">♟</span>
+                <div><p>Total Students</p><h2>512</h2><small>All recorded batches</small></div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-icon green">✓</span>
+                <div><p>Currently Enrolled</p><h2>426</h2><small>Active students</small></div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-icon purple">✦</span>
+                <div><p>Pass-out Students</p><h2>86</h2><small>Archived records</small></div>
+            </article>
+            <article class="stat-card">
+                <span class="stat-icon orange">!</span>
+                <div><p>Pending Dues</p><h2>37</h2><small>Require review</small></div>
+            </article>
+        </section>
+
+        <section class="workspace">
+
+            <div class="records-panel">
+
+                <div class="tabs">
+                    <button class="tab active" data-status="All">All Students</button>
+                    <button class="tab" data-status="Active">Enrolled</button>
+                    <button class="tab" data-status="Pass-out">Pass-out</button>
+                    <button class="tab" data-status="Inactive">Inactive</button>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-field search-field">
+                        <label>Search Student</label>
+                        <input id="search" placeholder="Name, roll no. or enrollment no.">
+                    </div>
+
+                    <div class="filter-field">
+                        <label>Admission Batch</label>
+                        <select id="batch">
+                            <option value="All">All Batches</option>
+                            <option>2022-2025</option>
+                            <option>2023-2026</option>
+                            <option>2024-2027</option>
+                            <option>2025-2028</option>
+                            <option>2026-2029</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-field">
+                        <label>Year</label>
+                        <select id="year">
+                            <option value="All">All Years</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="P">Pass-out</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-field">
+                        <label>Semester</label>
+                        <select id="semester">
+                            <option value="All">All Semesters</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="records-heading">
+                    <div>
+                        <h2>Student Directory</h2>
+                        <p>Computer Engineering · <span id="count">8</span> sample records</p>
+                    </div>
+                    <button class="primary-btn" id="openForm">＋ Add Student</button>
+                </div>
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Roll No.</th>
+                <th>Enrollment No.</th>
+                <th>Student Name</th>
+                <th>Admission Batch</th>
+                <th>Year / Semester</th>
+                <th>CGPA</th>
+                <th>Attendance</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="studentRows">
+            <tr id="emptyState">
+                <td colspan="9" class="empty-state">
+                    <div class="empty-state-content">
+                        <h3>No student records yet</h3>
+                        <p>Add your first student to start managing records.</p>
+                        <button type="button" class="primary-btn" id="emptyAdd">
+                            + Add First Student
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<p class="table-note">
+    Student records added on this page are temporary until the backend is connected.
+</p>
+            <aside class="right-panel">
+                <section class="side-card">
+                    <h3>Quick Actions</h3>
+                    <button class="action-btn" id="quickAdd">＋ &nbsp; Add New Student</button>
+                    <button class="action-btn" id="batchInfo">▦ &nbsp; Manage Batches</button>
+                    <button class="action-btn" id="feeInfo">₹ &nbsp; Fee Collection</button>
+                    <button class="action-btn" id="fineInfo">! &nbsp; Fine Records</button>
+                </section>
+
+                <section class="side-card">
+                    <h3>Batch Overview</h3>
+                    <div class="batch-row">
+    <span>1st Year · Sem 1–2</span>
+    <strong>—</strong>
+</div>
+
+<div class="batch-row">
+    <span>2nd Year · Sem 3–4</span>
+    <strong>—</strong>
+</div>
+
+<div class="batch-row">
+    <span>3rd Year · Sem 5–6</span>
+    <strong>—</strong>
+</div>
+                    <p class="hint">Lateral-entry students can be assigned their actual semester and admission batch separately.</p>
+                </section>
+
+                <section class="side-card">
+                    <h3>Academic & Finance Snapshot</h3>
+                    <div class="snapshot"><span>Average CGPA</span><strong>—</strong></div>
+                    <div class="snapshot"><span>Average Attendance</span><strong>—</strong></div>
+                    <div class="snapshot"><span>Fees Pending</span><strong>—</strong></div>
+                    <div class="snapshot"><span>Fines Pending</span><strong>—</strong></div>
+                    <p class="hint">Live totals will be calculated from student records later.</p>
+                </section>
+            </aside>
+        </section>
+
+    </main>
+</div>
+
+<!-- Add Student Modal -->
+<div class="modal-overlay" id="studentModal">
+    <div class="modal">
+        <div class="modal-heading">
+            <div><h2>Add Student</h2><p>Enter the student's basic academic details.</p></div>
+            <button id="closeForm" class="close-btn">×</button>
+        </div>
+
+        <form id="addStudentForm">
+            <div class="form-grid">
+                <div><label>Roll Number *</label><input id="rollNo" required></div>
+                <div><label>Enrollment Number *</label><input id="enrollmentNo" required></div>
+                <div><label>Full Name *</label><input id="studentName" required></div>
+                <div><label>Admission Batch *</label>
+                    <select id="studentBatch" required>
+                        <option value="">Select batch</option>
+                        <option>2024-2027</option><option>2025-2028</option>
+                        <option>2026-2029</option><option>2027-2030</option>
+                    </select>
+                </div>
+                <div><label>Current Semester *</label>
+                    <select id="studentSemester" required>
+                        <option value="">Select semester</option>
+                        <option value="1">1st Semester</option><option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option><option value="4">4th Semester</option>
+                        <option value="5">5th Semester</option><option value="6">6th Semester</option>
+                    </select>
+                </div>
+                <div><label>Admission Type</label>
+                    <select id="admissionType"><option>Regular</option><option>Lateral Entry</option></select>
+                </div>
+            </div>
+            <p class="form-note">This demo adds the record to the current page only. It is not saved to a database.</p>
+            <div class="modal-actions">
+                <button type="button" class="secondary-btn" id="cancelForm">Cancel</button>
+                <button type="submit" class="primary-btn">Add Student</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Student Profile Modal -->
+<div class="modal-overlay" id="profileModal">
+    <div class="modal">
+        <div class="modal-heading">
+            <div>
+                <h2 id="profileName">Student Profile</h2>
+                <p>Student academic and personal record</p>
+            </div>
+            <button type="button" id="closeProfile" class="close-btn">×</button>
+        </div>
+
+        <div class="form-grid">
+            <div>
+                <label>Roll Number</label>
+                <p id="profileRoll">—</p>
+            </div>
+            <div>
+                <label>Enrollment Number</label>
+                <p id="profileEnrollment">—</p>
+            </div>
+            <div>
+                <label>Admission Batch</label>
+                <p id="profileBatch">—</p>
+            </div>
+            <div>
+                <label>Year / Semester</label>
+                <p id="profileSemester">—</p>
+            </div>
+            <div>
+                <label>CGPA</label>
+                <p id="profileCGPA">—</p>
+            </div>
+            <div>
+                <label>Attendance</label>
+                <p id="profileAttendance">—</p>
+            </div>
+            <div>
+                <label>Status</label>
+                <p id="profileStatus">—</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+const modal = document.getElementById("studentModal");
+const form = document.getElementById("addStudentForm");
+const rows = document.getElementById("studentRows");
+const search = document.getElementById("search");
+let activeStatus = "All";
+
+function openModal() {
+    modal.classList.add("show");
+}
+function closeModal() {
+    modal.classList.remove("show");
+}
+
+document.getElementById("openForm").addEventListener("click", openModal);
+document.getElementById("quickAdd").addEventListener("click", openModal);
+document.getElementById("emptyAdd").addEventListener("click", openModal);
+document.getElementById("closeForm").addEventListener("click", closeModal);
+document.getElementById("cancelForm").addEventListener("click", closeModal);
+
+function filterStudents() {
+    const query = search.value.toLowerCase().trim();
+    const batch = document.getElementById("batch").value;
+    const year = document.getElementById("year").value;
+    const semester = document.getElementById("semester").value;
+    let count = 0;
+
+    rows.querySelectorAll("tr").forEach(row => {
+        const matchesText = row.innerText.toLowerCase().includes(query);
+        const matchesBatch = batch === "All" || row.dataset.batch === batch;
+        const matchesYear = year === "All" || row.dataset.year === year;
+        const matchesSemester = semester === "All" || row.dataset.semester === semester;
+        const matchesStatus = activeStatus === "All" || row.dataset.status === activeStatus;
+
+        const visible = matchesText && matchesBatch && matchesYear && matchesSemester && matchesStatus;
+        row.style.display = visible ? "" : "none";
+        if (visible) count++;
+    });
+
+    document.getElementById("count").textContent = count;
+}
+
+search.addEventListener("input", filterStudents);
+["batch", "year", "semester"].forEach(id => {
+    document.getElementById(id).addEventListener("change", filterStudents);
+});
+
+document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
+        tab.classList.add("active");
+        activeStatus = tab.dataset.status;
+        filterStudents();
+    });
+});
+
+form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const roll = document.getElementById("rollNo").value.trim();
+    const enrollment = document.getElementById("enrollmentNo").value.trim();
+    const name = document.getElementById("studentName").value.trim();
+    const batch = document.getElementById("studentBatch").value;
+    const semester = document.getElementById("studentSemester").value;
+    const admissionType = document.getElementById("admissionType").value;
+
+    if ([...rows.querySelectorAll("tr")].some(row =>
+        row.cells[0].textContent.trim() === roll ||
+        row.cells[1].textContent.trim() === enrollment
+    )) {
+        alert("This roll number or enrollment number already exists in the sample list.");
+        return;
+    }
+
+    const year = Math.ceil(Number(semester) / 2);
+    const yearLabel = year === 1 ? "1st" : year === 2 ? "2nd" : "3rd";
+    const semLabel = ["", "1st", "2nd", "3rd", "4th", "5th", "6th"][Number(semester)];
+    const row = document.createElement("tr");
+
+    row.dataset.status = "Active";
+    row.dataset.batch = batch;
+    row.dataset.year = String(year);
+    row.dataset.semester = semester;
+
+    [roll, enrollment, name, batch, `${yearLabel} / ${semLabel}`, "—", "—"].forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.appendChild(cell);
+    });
+
+    const statusCell = document.createElement("td");
+    statusCell.innerHTML = '<span class="status active-status">Active</span>';
+    row.appendChild(statusCell);
+
+    const actionCell = document.createElement("td");
+    actionCell.innerHTML = '<button class="icon-btn view" title="View">◉</button>';
+    row.appendChild(actionCell);
+
+    rows.prepend(row);
+    form.reset();
+    closeModal();
+    activeStatus = "All";
+    document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
+    document.querySelector('.tab[data-status="All"]').classList.add("active");
+    document.getElementById("batch").value = "All";
+    document.getElementById("year").value = "All";
+    document.getElementById("semester").value = "All";
+    search.value = "";
+    filterStudents();
+});
+
+document.getElementById("batchInfo").addEventListener("click", () => {
+    alert("Batch management UI can be connected in the next step.");
+});
+document.getElementById("feeInfo").addEventListener("click", () => {
+    alert("Fee collection records will be connected in the next step.");
+});
+document.getElementById("fineInfo").addEventListener("click", () => {
+    alert("Fine records will be connected in the next step.");
+});
+document.querySelectorAll(".view").forEach(button => {
+    button.addEventListener("click", () => alert("Student profile page will be built next."));
+});
+document.querySelectorAll(".edit").forEach(button => {
+    button.addEventListener("click", () => alert("Student edit form will be built next."));
+});
+
+const profileModal = document.getElementById("profileModal");
+
+document.querySelectorAll(".icon-btn.view").forEach(function(button) {
+    button.addEventListener("click", function() {
+        const row = button.closest("tr");
+        const cells = row.querySelectorAll("td");
+
+        document.getElementById("profileRoll").textContent =
+            cells[0].textContent.trim();
+
+        document.getElementById("profileEnrollment").textContent =
+            cells[1].textContent.trim();
+
+        document.getElementById("profileName").textContent =
+            cells[2].textContent.trim();
+
+        document.getElementById("profileBatch").textContent =
+            cells[3].textContent.trim();
+
+        document.getElementById("profileSemester").textContent =
+            cells[4].textContent.trim();
+
+        document.getElementById("profileCGPA").textContent =
+            cells[5].textContent.trim();
+
+        document.getElementById("profileAttendance").textContent =
+            cells[6].textContent.trim();
+
+        document.getElementById("profileStatus").textContent =
+            cells[7].textContent.trim();
+
+        profileModal.classList.add("show");
+    });
+});
+document.getElementById("closeProfile").addEventListener("click", function() {
+    profileModal.classList.remove("show");
+});
+
+profileModal.addEventListener("click", function(event) {
+    if (event.target === profileModal) {
+        profileModal.classList.remove("show");
+    }
+});
+</script>
+
+</body>
+</html>
