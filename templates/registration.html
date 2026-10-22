@@ -7,39 +7,200 @@
     <meta name="theme-color" content="#0d47a1">
     <title>Add {{ selected_role|title }} | Department Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/registration.css') }}">
+    <style>
+        /* Page-only dashboard frame: the registration form styles remain unchanged. */
+        .registration-page { display: block; }
+
+        .registration-aside.dashboard-sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            display: flex;
+            width: 260px;
+            min-height: 100vh;
+            padding: 25px 18px;
+            overflow-y: auto;
+            background: #0d47a1;
+            color: #fff;
+        }
+
+        .registration-aside.dashboard-sidebar::after { display: none; }
+
+        .dashboard-logo {
+            width: 100%;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .dashboard-logo h2 {
+            margin: 0 0 6px;
+            color: #fff;
+            font-size: 28px;
+        }
+
+        .dashboard-logo p {
+            margin: 0;
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.4;
+            opacity: .9;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dashboard-nav a,
+        .dashboard-logout a {
+            display: block;
+            padding: 13px 14px;
+            border-radius: 7px;
+            color: #fff;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-logout a:hover { background: #1565c0; }
+
+        .dashboard-nav a.active {
+            background: #fff;
+            color: #0d47a1;
+            font-weight: 700;
+        }
+
+        .dashboard-logout {
+            width: 100%;
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, .25);
+        }
+
+        .registration-main {
+            width: auto;
+            max-width: none;
+            min-height: 100vh;
+            margin: 0 0 0 260px;
+            padding: 25px 30px 58px;
+        }
+
+        .registration-header.dashboard-topbar {
+            min-height: 80px;
+            margin-bottom: 25px;
+            padding: 18px 22px;
+            border: 0;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        }
+
+        .dashboard-topbar h1 {
+            margin: 0 0 5px;
+            color: #0d47a1;
+            font-size: 24px;
+        }
+
+        .dashboard-topbar > div > p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .dashboard-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-profile-icon {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 50%;
+            background: #0d47a1;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .dashboard-profile strong,
+        .dashboard-profile small { display: block; }
+
+        .dashboard-profile strong { font-size: 14px; }
+
+        .dashboard-profile small {
+            margin-top: 2px;
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .dashboard-topbar .back-link { display: none; }
+
+        @media (max-width: 800px) {
+            .registration-aside.dashboard-sidebar { width: 210px; }
+            .registration-main { margin-left: 210px; }
+        }
+
+        @media (max-width: 600px) {
+            .registration-aside.dashboard-sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                padding: 20px 15px;
+            }
+
+            .dashboard-nav,
+            .dashboard-logout { display: none; }
+
+            .dashboard-logo { margin-bottom: 0; }
+            .registration-main { margin-left: 0; padding: 15px; }
+            .registration-header.dashboard-topbar { padding: 16px; }
+        }
+    </style>
 </head>
 
 <body>
     <div class="registration-page">
-        <aside class="registration-aside" aria-label="Registration information">
-            <a class="brand" href="{{ url_for('hod_dashboard') }}" aria-label="Go to HOD dashboard">
-                <span class="brand-mark">GPH</span>
-                <span>
-                    <strong>Department Management</strong>
-                    <small>Government Polytechnic Hamirpur</small>
-                </span>
-            </a>
-
-            <div class="aside-copy">
-                <span class="eyebrow">HOD CONTROL PANEL</span>
-                <h1>Build your department, one account at a time.</h1>
-                <p>Create secure accounts for students, faculty, and department heads from one simple workspace.</p>
+        <aside class="registration-aside dashboard-sidebar" aria-label="HOD navigation">
+            <div class="dashboard-logo">
+                <h2>GPH</h2>
+                <p>Department Management System</p>
             </div>
 
-            <ol class="setup-steps">
-                <li><span>1</span><div><strong>Choose account type</strong><small>Select who you are adding</small></div></li>
-                <li><span>2</span><div><strong>Add essential details</strong><small>Enter only the information needed</small></div></li>
-                <li><span>3</span><div><strong>Create access</strong><small>Set a secure password and save</small></div></li>
-            </ol>
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('hod_dashboard') }}">Dashboard</a>
+                <a href="#" class="active">Account Registration</a>
+                <a href="#">Student Management</a>
+                <a href="#">Faculty Management</a>
+                <a href="#">Course / Subject Management</a>
+                <a href="#">Timetable Management</a>
+                <a href="#">Attendance Overview</a>
+                <a href="#">Notice Management</a>
+                <a href="#">Events Management</a>
+                <a href="#">Leave / Request Approval</a>
+                <a href="#">Reports &amp; Analytics</a>
+            </nav>
 
-            <p class="aside-footer">Need help? Contact the department system administrator.</p>
+            <div class="dashboard-logout">
+                <a href="#">Logout</a>
+            </div>
         </aside>
 
         <main class="registration-main">
-            <header class="registration-header">
+            <header class="registration-header dashboard-topbar">
                 <div>
-                    <p class="breadcrumb"><a href="{{ url_for('hod_dashboard') }}">HOD Dashboard</a><span>/</span> Account registration</p>
-                    <h2>Add a new {{ selected_role|title }}</h2>
+                    <h1>Account Registration</h1>
+                    <p>Add a new {{ selected_role|title }}</p>
+                </div>
+                <div class="dashboard-profile">
+                    <div class="dashboard-profile-icon" aria-hidden="true">H</div>
+                    <div>
+                        <strong>HOD</strong>
+                        <small>Head of Department</small>
+                    </div>
                 </div>
                 <a class="back-link" href="{{ url_for('hod_dashboard') }}">← Back to dashboard</a>
             </header>
