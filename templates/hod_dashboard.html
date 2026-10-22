@@ -152,9 +152,20 @@
 
             <div class="quick-actions">
 
-                <button>Add Student</button>
+                <a class="quick-action primary" href="{{ url_for('register', role='student') }}">
+                    <span class="quick-action-icon" aria-hidden="true">+</span>
+                    <span><strong>Add Student</strong><small>Create a student account</small></span>
+                </a>
 
-                <button>Add Faculty</button>
+                <a class="quick-action" href="{{ url_for('register', role='faculty') }}">
+                    <span class="quick-action-icon" aria-hidden="true">+</span>
+                    <span><strong>Add Faculty</strong><small>Create a faculty account</small></span>
+                </a>
+
+                <a class="quick-action" href="{{ url_for('register', role='hod') }}">
+                    <span class="quick-action-icon" aria-hidden="true">+</span>
+                    <span><strong>Add HOD</strong><small>Create an HOD account</small></span>
+                </a>
 
                 <button>Manage Subjects</button>
 

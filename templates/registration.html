@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d47a1">
+    <title>Add {{ selected_role|title }} | Department Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registration.css') }}">
+    <style>
+        /* Page-only dashboard frame: the registration form styles remain unchanged. */
+        .registration-page { display: block; }
+
+        .registration-aside.dashboard-sidebar {
+            position: fixed;
+            inset: 0 auto 0 0;
+            display: flex;
+            width: 260px;
+            min-height: 100vh;
+            padding: 25px 18px;
+            overflow-y: auto;
+            background: #0d47a1;
+            color: #fff;
+        }
+
+        .registration-aside.dashboard-sidebar::after { display: none; }
+
+        .dashboard-logo {
+            width: 100%;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .dashboard-logo h2 {
+            margin: 0 0 6px;
+            color: #fff;
+            font-size: 28px;
+        }
+
+        .dashboard-logo p {
+            margin: 0;
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.4;
+            opacity: .9;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dashboard-nav a,
+        .dashboard-logout a {
+            display: block;
+            padding: 13px 14px;
+            border-radius: 7px;
+            color: #fff;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .dashboard-nav a:hover,
+        .dashboard-logout a:hover { background: #1565c0; }
+
+        .dashboard-nav a.active {
+            background: #fff;
+            color: #0d47a1;
+            font-weight: 700;
+        }
+
+        .dashboard-logout {
+            width: 100%;
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, .25);
+        }
+
+        .registration-main {
+            width: auto;
+            max-width: none;
+            min-height: 100vh;
+            margin: 0 0 0 260px;
+            padding: 25px 30px 58px;
+        }
+
+        .registration-header.dashboard-topbar {
+            min-height: 80px;
+            margin-bottom: 25px;
+            padding: 18px 22px;
+            border: 0;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        }
+
+        .dashboard-topbar h1 {
+            margin: 0 0 5px;
+            color: #0d47a1;
+            font-size: 24px;
+        }
+
+        .dashboard-topbar > div > p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .dashboard-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dashboard-profile-icon {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border-radius: 50%;
+            background: #0d47a1;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .dashboard-profile strong,
+        .dashboard-profile small { display: block; }
+
+        .dashboard-profile strong { font-size: 14px; }
+
+        .dashboard-profile small {
+            margin-top: 2px;
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .dashboard-topbar .back-link { display: none; }
+
+        @media (max-width: 800px) {
+            .registration-aside.dashboard-sidebar { width: 210px; }
+            .registration-main { margin-left: 210px; }
+        }
+
+        @media (max-width: 600px) {
+            .registration-aside.dashboard-sidebar {
+                position: relative;
+                width: 100%;
+                min-height: auto;
+                padding: 20px 15px;
+            }
+
+            .dashboard-nav,
+            .dashboard-logout { display: none; }
+
+            .dashboard-logo { margin-bottom: 0; }
+            .registration-main { margin-left: 0; padding: 15px; }
+            .registration-header.dashboard-topbar { padding: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="registration-page">
+        <aside class="registration-aside dashboard-sidebar" aria-label="HOD navigation">
+            <div class="dashboard-logo">
+                <h2>GPH</h2>
+                <p>Department Management System</p>
+            </div>
+
+            <nav class="dashboard-nav">
+                <a href="{{ url_for('hod_dashboard') }}">Dashboard</a>
+                <a href="#" class="active">Account Registration</a>
+                <a href="#">Student Management</a>
+                <a href="#">Faculty Management</a>
+                <a href="#">Course / Subject Management</a>
+                <a href="#">Timetable Management</a>
+                <a href="#">Attendance Overview</a>
+                <a href="#">Notice Management</a>
+                <a href="#">Events Management</a>
+                <a href="#">Leave / Request Approval</a>
+                <a href="#">Reports &amp; Analytics</a>
+            </nav>
+
+            <div class="dashboard-logout">
+                <a href="#">Logout</a>
+            </div>
+        </aside>
+
+        <main class="registration-main">
+            <header class="registration-header dashboard-topbar">
+                <div>
+                    <h1>Account Registration</h1>
+                    <p>Add a new {{ selected_role|title }}</p>
+                </div>
+                <div class="dashboard-profile">
+                    <div class="dashboard-profile-icon" aria-hidden="true">H</div>
+                    <div>
+                        <strong>HOD</strong>
+                        <small>Head of Department</small>
+                    </div>
+                </div>
+                <a class="back-link" href="{{ url_for('hod_dashboard') }}">← Back to dashboard</a>
+            </header>
+
+            <section class="registration-card" aria-labelledby="form-title">
+                <div class="card-heading">
+                    <div class="account-icon {{ selected_role }}" aria-hidden="true">
+                        {% if selected_role == 'student' %}S{% elif selected_role == 'faculty' %}F{% else %}H{% endif %}
+                    </div>
+                    <div>
+                        <p class="eyebrow">NEW {{ selected_role|upper }} ACCOUNT</p>
+                        <h3 id="form-title">
+                            {% if selected_role == 'student' %}Student registration{% elif selected_role == 'faculty' %}Faculty registration{% else %}HOD registration{% endif %}
+                        </h3>
+                        <p>
+                            {% if selected_role == 'student' %}Add enrolment details so the student can access their department services.
+                            {% elif selected_role == 'faculty' %}Set up a faculty account to manage classes, attendance, and academic work.
+                            {% else %}Create a Head of Department account with authorised administrative access.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <nav class="role-switcher" aria-label="Account type">
+                    <a href="{{ url_for('register', role='student') }}" class="{% if selected_role == 'student' %}selected{% endif %}">
+                        <span class="role-letter">S</span> Student
+                    </a>
+                    <a href="{{ url_for('register', role='faculty') }}" class="{% if selected_role == 'faculty' %}selected{% endif %}">
+                        <span class="role-letter">F</span> Faculty
+                    </a>
+                    <a href="{{ url_for('register', role='hod') }}" class="{% if selected_role == 'hod' %}selected{% endif %}">
+                        <span class="role-letter">H</span> HOD
+                    </a>
+                </nav>
+
+                <form class="registration-form" method="POST" action="{{ url_for('register') }}" novalidate>
+                    <input type="hidden" name="role" value="{{ selected_role }}">
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="name">Full name <span aria-hidden="true">*</span></label>
+                            <input type="text" id="name" name="name" placeholder="e.g. Ananya Sharma" autocomplete="name" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="email">Official email <span aria-hidden="true">*</span></label>
+                            <input type="email" id="email" name="email" placeholder="name@college.edu.in" autocomplete="email" required>
+                        </div>
+
+                        <div class="field field-wide">
+                            <label for="department">Department <span aria-hidden="true">*</span></label>
+                            <select id="department" name="department" required>
+                                <option value="" selected disabled>Select department</option>
+                                <option value="Computer Engineering">Computer Engineering</option>
+                                <option value="Civil Engineering">Civil Engineering</option>
+                                <option value="Electrical Engineering">Electrical Engineering</option>
+                                <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                <option value="Applied Sciences">Applied Sciences</option>
+                            </select>
+                        </div>
+
+                        {% if selected_role == 'student' %}
+                        <div class="field">
+                            <label for="roll_number">Roll number <span aria-hidden="true">*</span></label>
+                            <input type="text" id="roll_number" name="roll_number" placeholder="e.g. 23CSE014" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="semester">Current semester <span aria-hidden="true">*</span></label>
+                            <select id="semester" name="semester" required>
+                                <option value="" selected disabled>Select semester</option>
+                                {% for number in range(1, 9) %}<option value="{{ number }}">Semester {{ number }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        {% if selected_role == 'hod' %}
+                        <div class="field field-wide access-key-field">
+                            <label for="hod_access_key">HOD access key <span aria-hidden="true">*</span></label>
+                            <div class="password-control">
+                                <input type="password" id="hod_access_key" name="hod_access_key" placeholder="Enter the administrator-provided key" autocomplete="off" required>
+                                <button type="button" class="visibility-toggle" data-password-toggle="hod_access_key" aria-label="Show HOD access key">Show</button>
+                            </div>
+                            <small>This verification key is provided by the system administrator.</small>
+                        </div>
+                        {% endif %}
+
+                        <div class="field">
+                            <label for="password">Create password <span aria-hidden="true">*</span></label>
+                            <div class="password-control">
+                                <input type="password" id="password" name="password" placeholder="Minimum 8 characters" autocomplete="new-password" minlength="8" required>
+                                <button type="button" class="visibility-toggle" data-password-toggle="password" aria-label="Show password">Show</button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="confirm_password">Confirm password <span aria-hidden="true">*</span></label>
+                            <div class="password-control">
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" autocomplete="new-password" minlength="8" required>
+                                <button type="button" class="visibility-toggle" data-password-toggle="confirm_password" aria-label="Show password confirmation">Show</button>
+                            </div>
+                            <small class="validation-message" id="password-message" aria-live="polite"></small>
+                        </div>
+                    </div>
+
+                    {% if selected_role == 'hod' %}
+                    <div class="security-note"><span aria-hidden="true">!</span> HOD accounts have elevated access. Verify the department and email address before creating this account.</div>
+                    {% endif %}
+
+                    <div class="form-footer">
+                        <p><span aria-hidden="true">⌁</span> Account details are visible only to authorised department staff.</p>
+                        <div class="form-actions">
+                            <a class="cancel-button" href="{{ url_for('hod_dashboard') }}">Cancel</a>
+                            <button type="submit" class="submit-button">Create {{ selected_role|title }} Account <span aria-hidden="true">→</span></button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/registration.js') }}"></script>
+</body>
+
+</html>
