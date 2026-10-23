@@ -93,7 +93,14 @@ def student_management():
 def faculty():
     if "user_id" not in session:
         return redirect(url_for("login"))
-    return "<p>this is  faculty dashboard page.</p>"
+
+    faculty_users = User.query.filter(db.func.lower(User.role) == "faculty").all()
+    current_user = User.query.get(session.get("user_id"))
+    return render_template(
+        "faculty.html",
+        faculty_users=faculty_users,
+        current_user=current_user
+    )
 
 
 @app.route("/register", methods=["GET", "POST"])

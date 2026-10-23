@@ -1,0 +1,1140 @@
+{% extends "hodBase.html" %}
+{% block title %}Faculty Management & Profile View | GPH{% endblock %}
+
+{% block stylesheets %}{{ url_for('static', filename='css/faculty.css') }}{% endblock %}
+
+{% block content %}
+<main class="main-wrapper">
+
+    <!-- TOPBAR -->
+    <header class="faculty-topbar">
+        <div class="topbar-dept">
+            <span class="dept-badge">Department Portal</span>
+            <span class="dept-name">Computer Engineering · Government Polytechnic</span>
+        </div>
+
+        <div class="topbar-actions">
+            <!-- CURRENT USER PROFILE TRIGGER -->
+            <button class="header-user-btn" id="myProfileBtn" title="Click to view your profile">
+                <div class="user-avatar-circle">
+                    {{ (session.get('user_name', 'Faculty')|first)|upper }}
+                </div>
+                <div class="user-details-mini">
+                    <span class="user-name">{{ session.get('user_name', 'Faculty Member') }}</span>
+                    <span class="user-role-tag">{{ session.get('user_role', 'Faculty') }} · View Profile</span>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- FACULTY HERO / WELCOME BANNER -->
+    <section class="faculty-hero">
+        <div class="hero-content">
+            <div class="hero-tag">
+                <span>✦</span> ACADEMIC STAFF & FACULTY PORTAL
+            </div>
+            <h1 class="hero-title">
+                {% if session.get('user_role', '').lower() == 'faculty' %}
+                Welcome back, {{ session.get('user_name', 'Professor') }}
+                {% else %}
+                Faculty Management & Directory
+                {% endif %}
+            </h1>
+            <p class="hero-desc">
+                {% if session.get('user_role', '').lower() == 'faculty' %}
+                View your academic assignments, timetable load, and departmental faculty profiles all in one place.
+                {% else %}
+                Manage department teaching staff, view detailed academic profiles, track workload assignments, and
+                review credentials.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="hero-actions">
+            <button class="hero-btn" id="heroViewProfileBtn">
+                <span>👁</span> View My Profile
+            </button>
+            <a href="{{ url_for('register', role='faculty') }}" class="hero-btn secondary">
+                <span>＋</span> Add New Faculty
+            </a>
+        </div>
+    </section>
+
+    <!-- KEY STATS CARDS -->
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-icon-box blue">👥</div>
+            <div class="stat-info">
+                <span class="stat-label">Total Faculty</span>
+                <span class="stat-value" id="statTotalFaculty">12</span>
+                <span class="stat-sub">Teaching & Research Staff</span>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon-box green">📖</div>
+            <div class="stat-info">
+                <span class="stat-label">Courses Handled</span>
+                <span class="stat-value">18</span>
+                <span class="stat-sub">Across 6 Semesters</span>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon-box purple">🎓</div>
+            <div class="stat-info">
+                <span class="stat-label">Avg Experience</span>
+                <span class="stat-value">8.5 Yrs</span>
+                <span class="stat-sub">High Academic Caliber</span>
+            </div>
+        </article>
+
+        <article class="stat-card">
+            <div class="stat-icon-box orange">⏱</div>
+            <div class="stat-info">
+                <span class="stat-label">Weekly Load</span>
+                <span class="stat-value">164 Hrs</span>
+                <span class="stat-sub">Theory & Practical Labs</span>
+            </div>
+        </article>
+    </section>
+
+    <!-- CONTROLS & FILTER BAR -->
+    <section class="roster-controls">
+        <div class="controls-top">
+            <div class="category-tabs" id="designationTabs">
+                <button class="category-tab active" data-filter="all">All Faculty</button>
+                <button class="category-tab" data-filter="Professor">Professors</button>
+                <button class="category-tab" data-filter="Associate Professor">Associate Prof.</button>
+                <button class="category-tab" data-filter="Assistant Professor">Assistant Prof.</button>
+                <button class="category-tab" data-filter="Lecturer">Lecturers</button>
+            </div>
+
+            <div class="view-toggle-btns">
+                <button class="toggle-btn active" id="btnGridView" title="Grid View">
+                    <span>▦</span> Cards
+                </button>
+                <button class="toggle-btn" id="btnTableView" title="Table View">
+                    <span>≡</span> Table
+                </button>
+            </div>
+        </div>
+
+        <div class="controls-filters">
+            <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="facultySearchInput" class="search-input"
+                    placeholder="Search by name, ID, subject, email or designation...">
+            </div>
+
+            <select id="deptFilter" class="filter-select">
+                <option value="all">All Departments</option>
+                <option value="Computer Engineering">Computer Engineering</option>
+                <option value="Information Technology">Information Technology</option>
+                <option value="Electronics & Comm.">Electronics & Comm.</option>
+            </select>
+
+            <select id="statusFilter" class="filter-select">
+                <option value="all">All Status</option>
+                <option value="Active">Available / On Duty</option>
+                <option value="Busy">In Lecture / Lab</option>
+                <option value="Leave">On Leave</option>
+            </select>
+
+            <a href="{{ url_for('register', role='faculty') }}" class="add-faculty-link">
+                <span>＋</span> Add Faculty
+            </a>
+        </div>
+    </section>
+
+    <!-- FACULTY ROSTER: GRID CARDS VIEW -->
+    <section class="faculty-grid" id="facultyGrid">
+        <!-- Faculty cards will be rendered dynamically by JavaScript -->
+    </section>
+
+    <!-- FACULTY ROSTER: TABLE LIST VIEW -->
+    <div class="faculty-table-wrap" id="facultyTableWrap">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Faculty Member</th>
+                    <th>Employee ID</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Subjects / Specialization</th>
+                    <th>Cabin / Room</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="facultyTableBody">
+                <!-- Table rows will be rendered dynamically by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-roster-state" id="emptyState">
+        <div class="empty-icon">🔎</div>
+        <h3 class="empty-title">No Faculty Found</h3>
+        <p class="empty-desc">We couldn't find any faculty members matching your search filters. Try adjusting your
+            query or filter parameters.</p>
+        <button class="btn-secondary" id="resetFiltersBtn">Reset All Filters</button>
+    </div>
+
+</main>
+
+<!-- ==============================================
+     VIEW PROFILE MODAL (HIGH WOW FACTOR & COMPLETE)
+     ============================================== -->
+<div class="modal-overlay" id="facultyProfileModal" role="dialog" aria-modal="true" aria-labelledby="modalFacultyName">
+    <div class="profile-modal-card">
+
+        <!-- MODAL HERO / HEADER -->
+        <div class="modal-hero-banner">
+            <div class="modal-profile-header">
+                <div class="modal-profile-avatar" id="modalFacultyAvatar">AS</div>
+                <div class="modal-header-meta">
+                    <h2 id="modalFacultyName">Dr. Arvind Sharma</h2>
+                    <p class="modal-desig" id="modalFacultyDesignation">Professor & Head of Academic Committee</p>
+                    <div class="modal-header-pills">
+                        <span class="modal-pill" id="modalFacultyDept">Computer Engineering</span>
+                        <span class="modal-pill" id="modalFacultyCode">FAC-CSE-101</span>
+                        <span class="status-badge active" id="modalFacultyStatus">Available</span>
+                    </div>
+                </div>
+            </div>
+            <button class="modal-close-x" id="modalCloseXBtn" title="Close Profile">&times;</button>
+        </div>
+
+        <!-- MODAL NAVIGATION TABS -->
+        <nav class="modal-tabs-nav">
+            <button class="modal-tab-btn active" data-tab="tab-overview">
+                <span>📌</span> Overview & Contact
+            </button>
+            <button class="modal-tab-btn" data-tab="tab-academics">
+                <span>🎓</span> Qualifications & Exp.
+            </button>
+            <button class="modal-tab-btn" data-tab="tab-teaching">
+                <span>📚</span> Teaching & Workload
+            </button>
+            <button class="modal-tab-btn" data-tab="tab-research">
+                <span>🔬</span> Research & Papers
+            </button>
+        </nav>
+
+        <!-- MODAL BODY CONTENT -->
+        <div class="modal-body-scroll">
+
+            <!-- TAB 1: OVERVIEW & CONTACT -->
+            <div class="tab-pane active" id="tab-overview">
+                <div class="profile-section-title">Personal & Contact Information</div>
+                <div class="info-grid-2">
+                    <div class="info-cell">
+                        <span class="info-cell-label">Official Email</span>
+                        <span class="info-cell-value" id="modalEmail">arvind.sharma@gph.ac.in</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Phone / Mobile</span>
+                        <span class="info-cell-value" id="modalPhone">+91 98765 43210</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Faculty / Staff Cabin</span>
+                        <span class="info-cell-value" id="modalCabin">Room 304, Block-B (CS Wing)</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Joining Date</span>
+                        <span class="info-cell-value" id="modalJoinDate">14 August 2016</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Employment Type</span>
+                        <span class="info-cell-value" id="modalEmpType">Regular / Full-Time</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Office Consultation Hours</span>
+                        <span class="info-cell-value" id="modalOfficeHours">Mon - Thu: 03:00 PM – 04:30 PM</span>
+                    </div>
+                </div>
+
+                <div class="profile-section-title" style="margin-top: 10px;">About & Biography</div>
+                <p style="font-size: 13px; line-height: 1.6; color: var(--text-secondary);" id="modalBio">
+                    Dr. Arvind Sharma has over 12 years of experience in computer science education, research, and
+                    laboratory administration. He mentors final year diploma project teams and actively coordinates
+                    department accreditation and curriculum revision committees.
+                </p>
+            </div>
+
+            <!-- TAB 2: QUALIFICATIONS & EXPERIENCE -->
+            <div class="tab-pane" id="tab-academics">
+                <div class="profile-section-title">Educational Qualifications</div>
+                <div class="workload-chips" id="modalDegreesList">
+                    <div class="workload-chip">
+                        <div>
+                            <div class="chip-title">Ph.D. in Computer Science & Engineering</div>
+                            <div class="chip-sub">Indian Institute of Technology (IIT) · 2018</div>
+                        </div>
+                        <span class="chip-badge">Doctorate</span>
+                    </div>
+                    <div class="workload-chip">
+                        <div>
+                            <div class="chip-title">M.Tech in Computer Engineering</div>
+                            <div class="chip-sub">National Institute of Technology (NIT) · 2012</div>
+                        </div>
+                        <span class="chip-badge">First Class with Distinction</span>
+                    </div>
+                    <div class="workload-chip">
+                        <div>
+                            <div class="chip-title">B.Tech in Information Technology</div>
+                            <div class="chip-sub">State Technological University · 2009</div>
+                        </div>
+                        <span class="chip-badge">Gold Medalist</span>
+                    </div>
+                </div>
+
+                <div class="profile-section-title" style="margin-top: 12px;">Experience & Expertise</div>
+                <div class="info-grid-2">
+                    <div class="info-cell">
+                        <span class="info-cell-label">Total Teaching Experience</span>
+                        <span class="info-cell-value" id="modalTotalExp">12+ Years</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Industry Experience</span>
+                        <span class="info-cell-value" id="modalIndustryExp">3.5 Years (Software Engineer)</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Core Specializations</span>
+                        <span class="info-cell-value" id="modalSpecialization">Algorithms, Machine Learning, Cloud
+                            Systems</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Professional Certifications</span>
+                        <span class="info-cell-value" id="modalCertifications">AWS Certified Architect, NPTEL Elite
+                            Gold</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: TEACHING & WORKLOAD -->
+            <div class="tab-pane" id="tab-teaching">
+                <div class="profile-section-title">Current Semester Teaching Workload</div>
+                <div class="workload-chips" id="modalSubjectLoadList">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div class="profile-section-title" style="margin-top: 14px;">Laboratory & Batch In-charge</div>
+                <div class="info-grid-2">
+                    <div class="info-cell">
+                        <span class="info-cell-label">Assigned Laboratory</span>
+                        <span class="info-cell-value" id="modalLabIncharge">Advanced Computing Lab (Lab 203)</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Mentorship Batch</span>
+                        <span class="info-cell-value" id="modalMentorBatch">3rd Year Computer Engg - Batch A (Roll
+                            1-30)</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Weekly Theory Lectures</span>
+                        <span class="info-cell-value" id="modalTheoryHours">8 Hours / Week</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Weekly Practical Sessions</span>
+                        <span class="info-cell-value" id="modalLabHours">6 Hours / Week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: RESEARCH & ACHIEVEMENTS -->
+            <div class="tab-pane" id="tab-research">
+                <div class="profile-section-title">Research Papers & Contributions</div>
+                <div class="info-grid-2">
+                    <div class="info-cell">
+                        <span class="info-cell-label">International Journals (SCI / Scopus)</span>
+                        <span class="info-cell-value" id="modalJournalsCount">14 Published Papers</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Conferences & Symposiums</span>
+                        <span class="info-cell-value" id="modalConferencesCount">18 National & International</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Patents Filed / Granted</span>
+                        <span class="info-cell-value" id="modalPatents">2 Patents Published</span>
+                    </div>
+                    <div class="info-cell">
+                        <span class="info-cell-label">Department Committee Role</span>
+                        <span class="info-cell-value" id="modalCommittee">NBA Accreditation Coordinator</span>
+                    </div>
+                </div>
+
+                <div class="profile-section-title" style="margin-top: 14px;">Key Research Interests</div>
+                <div class="subjects-tags-row" id="modalResearchTags">
+                    <span class="subject-tag">Artificial Intelligence</span>
+                    <span class="subject-tag">Deep Learning</span>
+                    <span class="subject-tag">Cloud Virtualization</span>
+                    <span class="subject-tag">Distributed Databases</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MODAL FOOTER -->
+        <footer class="modal-footer">
+            <span class="modal-footer-left">Verified Department Faculty Record</span>
+            <div class="modal-footer-btns">
+                <button type="button" class="btn-secondary" id="btnPrintProfile">
+                    <span>🖨</span> Print Profile
+                </button>
+                <a href="#" class="btn-primary" id="btnMailFaculty">
+                    <span>✉</span> Send Email
+                </a>
+                <button type="button" class="btn-secondary" id="modalCloseBtn">Close</button>
+            </div>
+        </footer>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Embedded Database Faculty Users from Flask
+    const dbFacultyUsers = [
+        {% for u in faculty_users %}
+        {
+            id: {{ u.id }},
+            name: {{ u.name|tojson }},
+            email: {{ u.email|tojson }},
+            department: {{ (u.department or 'Computer Engineering')|tojson }},
+            role: {{ u.role|tojson }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Current logged-in user info
+    const currentUser = {
+        name: "{{ session.get('user_name', 'Faculty Member') }}",
+        email: "{{ session.get('user_email', 'faculty@gph.ac.in') }}",
+        role: "{{ session.get('user_role', 'Faculty') }}",
+        department: "{{ current_user.department if current_user and current_user.department else 'Computer Engineering' }}"
+    };
+
+    // Rich Sample Faculty Staff Directory
+    const sampleFacultyData = [
+        {
+            id: "fac-101",
+            code: "FAC-CSE-101",
+            name: "Dr. Arvind Sharma",
+            designation: "Professor & Academic Head",
+            category: "Professor",
+            department: "Computer Engineering",
+            email: "arvind.sharma@gph.ac.in",
+            phone: "+91 98765 43210",
+            cabin: "Room 304, CS Wing (Block-B)",
+            joinDate: "14 August 2015",
+            experience: "12+ Years",
+            industryExp: "3.5 Years",
+            status: "Active",
+            statusLabel: "Available",
+            officeHours: "Mon - Thu: 03:00 PM – 04:30 PM",
+            bio: "Dr. Sharma specializes in Algorithms and Machine Learning. He leads the Department Accreditation team and guides final year diploma development projects.",
+            degrees: [
+                { title: "Ph.D. in Computer Science & Engineering", institute: "IIT Bombay · 2018", badge: "Doctorate" },
+                { title: "M.Tech in Computer Engineering", institute: "NIT Surat · 2012", badge: "Distinction" },
+                { title: "B.Tech in Information Technology", institute: "State Tech University · 2009", badge: "Gold Medalist" }
+            ],
+            specialization: "Data Structures, Machine Learning, Cloud Architecture",
+            certifications: "AWS Certified Solutions Architect, NPTEL Elite Gold",
+            labIncharge: "Advanced Computing Lab (Lab 203)",
+            mentorBatch: "3rd Year Computer Engg - Batch A",
+            theoryHours: "8 Hours / Week",
+            labHours: "6 Hours / Week",
+            subjects: [
+                { code: "CS-501", name: "Data Structures & Algorithms", sem: "Semester 3", hours: "4 Hrs/Week" },
+                { code: "CS-702", name: "Machine Learning & Neural Networks", sem: "Semester 5", hours: "4 Hrs/Week" },
+                { code: "CS-503P", name: "DSA Practical Lab", sem: "Semester 3", hours: "6 Hrs/Week" }
+            ],
+            journals: "14 Published Papers (IEEE & Springer)",
+            conferences: "18 International Conferences",
+            patents: "2 Patents Published",
+            committee: "NBA Accreditation & Syllabus Committee",
+            researchTags: ["Artificial Intelligence", "Deep Learning", "Cloud Systems", "Graph Algorithms"]
+        },
+        {
+            id: "fac-102",
+            code: "FAC-CSE-102",
+            name: "Prof. Ananya Verma",
+            designation: "Associate Professor",
+            category: "Associate Professor",
+            department: "Computer Engineering",
+            email: "ananya.verma@gph.ac.in",
+            phone: "+91 98234 56789",
+            cabin: "Room 306, CS Wing (Block-B)",
+            joinDate: "10 January 2018",
+            experience: "9+ Years",
+            industryExp: "2 Years (Infosys Labs)",
+            status: "Busy",
+            statusLabel: "In Lecture",
+            officeHours: "Tue & Fri: 02:00 PM – 03:30 PM",
+            bio: "Prof. Verma coordinates web engineering and database laboratories. She is a passionate open-source contributor and technical mentor.",
+            degrees: [
+                { title: "M.Tech in Software Engineering", institute: "Delhi Technological University · 2015", badge: "First Class" },
+                { title: "B.E. in Computer Science", institute: "Pune University · 2013", badge: "Distinction" }
+            ],
+            specialization: "Database Management Systems, Full-Stack Web Development, NoSQL",
+            certifications: "Oracle Certified Professional (MySQL/Oracle 19c), MongoDB Certified Developer",
+            labIncharge: "Database Systems & Web Development Lab (Lab 201)",
+            mentorBatch: "2nd Year Computer Engg - Batch B",
+            theoryHours: "6 Hours / Week",
+            labHours: "8 Hours / Week",
+            subjects: [
+                { code: "CS-302", name: "Database Management Systems", sem: "Semester 3", hours: "4 Hrs/Week" },
+                { code: "CS-404", name: "Web Application Technologies", sem: "Semester 4", hours: "4 Hrs/Week" },
+                { code: "CS-305P", name: "RDBMS Lab Practical", sem: "Semester 3", hours: "6 Hrs/Week" }
+            ],
+            journals: "9 International Journal Papers",
+            conferences: "12 National Conferences",
+            patents: "1 Patent Filed",
+            committee: "Student Technical Club Faculty Lead",
+            researchTags: ["Distributed Databases", "Modern Web Frameworks", "Information Retrieval"]
+        },
+        {
+            id: "fac-103",
+            code: "FAC-CSE-103",
+            name: "Er. Rajesh Kumar Patel",
+            designation: "Assistant Professor",
+            category: "Assistant Professor",
+            department: "Computer Engineering",
+            email: "rajesh.patel@gph.ac.in",
+            phone: "+91 94112 33445",
+            cabin: "Room 208, Block-A",
+            joinDate: "05 July 2020",
+            experience: "6+ Years",
+            industryExp: "4 Years (Cisco Systems)",
+            status: "Active",
+            statusLabel: "Available",
+            officeHours: "Mon - Wed: 11:30 AM – 01:00 PM",
+            bio: "Er. Patel brings valuable industry experience from enterprise computer networking and cybersecurity infrastructure.",
+            degrees: [
+                { title: "M.Tech in Computer Networks & Security", institute: "IIIT Bangalore · 2018", badge: "First Class" },
+                { title: "B.Tech in CSE", institute: "Gujarat Technological University · 2014", badge: "First Class" }
+            ],
+            specialization: "Computer Networks, Network Security, Operating Systems, Linux Internals",
+            certifications: "Cisco CCNA & CCNP Security Certified, Red Hat RHCSA",
+            labIncharge: "Networking & Cyber Security Lab (Lab 105)",
+            mentorBatch: "1st Year Diploma - Batch C",
+            theoryHours: "8 Hours / Week",
+            labHours: "8 Hours / Week",
+            subjects: [
+                { code: "CS-401", name: "Operating Systems Principles", sem: "Semester 4", hours: "4 Hrs/Week" },
+                { code: "CS-603", name: "Computer Networks & Protocols", sem: "Semester 6", hours: "4 Hrs/Week" },
+                { code: "CS-605P", name: "Network Configuration Lab", sem: "Semester 6", hours: "8 Hrs/Week" }
+            ],
+            journals: "6 Research Papers",
+            conferences: "9 Conferences",
+            patents: "1 Patent Granted",
+            committee: "Campus Network & IT Infrastructure In-charge",
+            researchTags: ["Software Defined Networks", "Network Security", "Linux Kernel"]
+        },
+        {
+            id: "fac-104",
+            code: "FAC-CSE-104",
+            name: "Dr. Meenakshi Iyer",
+            designation: "Associate Professor",
+            category: "Associate Professor",
+            department: "Computer Engineering",
+            email: "meenakshi.iyer@gph.ac.in",
+            phone: "+91 97654 32190",
+            cabin: "Room 308, CS Wing (Block-B)",
+            joinDate: "18 June 2017",
+            experience: "10+ Years",
+            industryExp: "1.5 Years",
+            status: "Active",
+            statusLabel: "Available",
+            officeHours: "Wed & Fri: 01:00 PM – 02:30 PM",
+            bio: "Dr. Iyer specializes in Theory of Computation, Compiler Design and Natural Language Processing. She serves on the academic board of examiners.",
+            degrees: [
+                { title: "Ph.D. in Computer Science", institute: "Anna University · 2017", badge: "Doctorate" },
+                { title: "M.E. in Computer Science", institute: "Madras Institute of Technology · 2012", badge: "Distinction" }
+            ],
+            specialization: "Theory of Computation, Compilers, Natural Language Processing",
+            certifications: "Stanford Online NLP Specialization, NPTEL Elite",
+            labIncharge: "Programming Languages & Simulation Lab (Lab 202)",
+            mentorBatch: "3rd Year Diploma - Batch B",
+            theoryHours: "8 Hours / Week",
+            labHours: "4 Hours / Week",
+            subjects: [
+                { code: "CS-502", name: "Theory of Computation", sem: "Semester 5", hours: "4 Hrs/Week" },
+                { code: "CS-601", name: "Compiler Design", sem: "Semester 6", hours: "4 Hrs/Week" },
+                { code: "CS-506P", name: "System Programming Lab", sem: "Semester 5", hours: "4 Hrs/Week" }
+            ],
+            journals: "11 Papers in Scopus Indexed Journals",
+            conferences: "15 International Conferences",
+            patents: "None",
+            committee: "Controller of Internal Examinations",
+            researchTags: ["NLP", "Automata Theory", "Formal Languages"]
+        },
+        {
+            id: "fac-105",
+            code: "FAC-CSE-105",
+            name: "Prof. Vikram Aditya Deshmukh",
+            designation: "Assistant Professor",
+            category: "Assistant Professor",
+            department: "Computer Engineering",
+            email: "vikram.deshmukh@gph.ac.in",
+            phone: "+91 99887 66554",
+            cabin: "Room 210, Block-A",
+            joinDate: "01 September 2021",
+            experience: "5+ Years",
+            industryExp: "3 Years (Mobile App Dev)",
+            status: "Leave",
+            statusLabel: "On Leave",
+            officeHours: "Mon & Thu: 10:00 AM – 11:30 AM",
+            bio: "Prof. Deshmukh has expertise in Mobile App Development (Flutter/Android) and Object Oriented Programming in Java & C++.",
+            degrees: [
+                { title: "M.Tech in CSE", institute: "COEP Technological University · 2019", badge: "Distinction" },
+                { title: "B.E. in Information Technology", institute: "Mumbai University · 2016", badge: "First Class" }
+            ],
+            specialization: "Java Programming, Android & Flutter Development, Software Testing",
+            certifications: "Google Associate Android Developer, Oracle Java SE 11 Certified",
+            labIncharge: "Mobile Application & Java Lab (Lab 104)",
+            mentorBatch: "2nd Year Diploma - Batch A",
+            theoryHours: "6 Hours / Week",
+            labHours: "8 Hours / Week",
+            subjects: [
+                { code: "CS-301", name: "Object Oriented Programming (Java)", sem: "Semester 3", hours: "4 Hrs/Week" },
+                { code: "CS-504", name: "Mobile Application Development", sem: "Semester 5", hours: "4 Hrs/Week" },
+                { code: "CS-304P", name: "Java Programming Lab", sem: "Semester 3", hours: "6 Hrs/Week" }
+            ],
+            journals: "4 International Journals",
+            conferences: "7 Conferences",
+            patents: "1 Design Patent",
+            committee: "Department Sports & Cultural Committee Lead",
+            researchTags: ["Mobile Computing", "Android Security", "Component-Based Software"]
+        },
+        {
+            id: "fac-106",
+            code: "FAC-CSE-106",
+            name: "Er. Neha Gupta",
+            designation: "Lecturer & Lab Instructor",
+            category: "Lecturer",
+            department: "Computer Engineering",
+            email: "neha.gupta@gph.ac.in",
+            phone: "+91 98112 23344",
+            cabin: "Hardware Lab 102 (Block-A)",
+            joinDate: "12 February 2022",
+            experience: "4+ Years",
+            industryExp: "1 Year",
+            status: "Active",
+            statusLabel: "Available",
+            officeHours: "Daily: 03:30 PM – 04:30 PM",
+            bio: "Er. Neha Gupta manages hardware and microprocessor laboratories and guides first-year students in fundamentals of programming.",
+            degrees: [
+                { title: "B.Tech in Computer Engineering", institute: "State Technological University · 2020", badge: "First Class with Distinction" },
+                { title: "Diploma in Computer Engineering", institute: "Government Polytechnic · 2017", badge: "Gold Medal" }
+            ],
+            specialization: "Microprocessors & Microcontrollers, C Programming, Digital Electronics",
+            certifications: "Embedded Systems Certification, Python for Data Science (NPTEL)",
+            labIncharge: "Digital Electronics & Microprocessor Lab (Lab 102)",
+            mentorBatch: "1st Year Diploma - Batch A",
+            theoryHours: "4 Hours / Week",
+            labHours: "12 Hours / Week",
+            subjects: [
+                { code: "CS-101", name: "Programming in C Language", sem: "Semester 1", hours: "4 Hrs/Week" },
+                { code: "CS-202", name: "Digital Techniques & Microprocessors", sem: "Semester 2", hours: "4 Hrs/Week" },
+                { code: "CS-103P", name: "C Programming Lab", sem: "Semester 1", hours: "8 Hrs/Week" }
+            ],
+            journals: "2 Papers Published",
+            conferences: "4 Conferences",
+            patents: "None",
+            committee: "Women Development Cell Member",
+            researchTags: ["IoT Devices", "Embedded C", "Hardware Interfacing"]
+        }
+    ];
+
+    // Merge registered database faculty if any exist
+    if (dbFacultyUsers && dbFacultyUsers.length > 0) {
+        dbFacultyUsers.forEach((user, index) => {
+            // Check if already in sample
+            const exists = sampleFacultyData.some(f => f.email.toLowerCase() === user.email.toLowerCase());
+            if (!exists) {
+                sampleFacultyData.push({
+                    id: `db-fac-${user.id}`,
+                    code: `FAC-CSE-${110 + index}`,
+                    name: user.name,
+                    designation: "Assistant Professor",
+                    category: "Assistant Professor",
+                    department: user.department || "Computer Engineering",
+                    email: user.email,
+                    phone: "+91 98" + Math.floor(10000000 + Math.random() * 90000000),
+                    cabin: `Room ${200 + index}, Staff Wing`,
+                    joinDate: "Session 2026-27",
+                    experience: "3+ Years",
+                    industryExp: "1+ Year",
+                    status: "Active",
+                    statusLabel: "Available",
+                    officeHours: "Mon - Thu: 02:00 PM – 03:30 PM",
+                    bio: `${user.name} is a faculty member in ${user.department || 'Computer Engineering'}. Involved in academic teaching, curriculum delivery, and student project guidance.`,
+                    degrees: [
+                        { title: "M.Tech in Computer Engineering", institute: "State Technical University · 2022", badge: "First Class" },
+                        { title: "B.Tech in Computer Science", institute: "University Department · 2019", badge: "Distinction" }
+                    ],
+                    specialization: "Computer Programming, Database Design, Software Engineering",
+                    certifications: "Faculty Induction Program Certified, NPTEL",
+                    labIncharge: "Software Engineering & Project Lab",
+                    mentorBatch: "2nd Year Diploma",
+                    theoryHours: "6 Hours / Week",
+                    labHours: "6 Hours / Week",
+                    subjects: [
+                        { code: "CS-301", name: "Software Engineering Principles", sem: "Semester 3", hours: "4 Hrs/Week" },
+                        { code: "CS-305P", name: "Project Lab", sem: "Semester 3", hours: "4 Hrs/Week" }
+                    ],
+                    journals: "3 Research Papers",
+                    conferences: "5 National Conferences",
+                    patents: "None",
+                    committee: "Academic Roster & Examination Committee",
+                    researchTags: ["Software Engineering", "Web Technologies", "Computer Science"]
+                });
+            }
+        });
+    }
+
+    // Update stat card for total faculty
+    document.getElementById("statTotalFaculty").textContent = sampleFacultyData.length;
+
+    // Helper: Generate Initials
+    function getInitials(name) {
+        if (!name) return "FC";
+        const parts = name.replace(/Dr\.|Prof\.|Er\./gi, '').trim().split(' ').filter(Boolean);
+        if (parts.length >= 2) {
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        } else if (parts.length === 1) {
+            return parts[0].substring(0, 2).toUpperCase();
+        }
+        return "FC";
+    }
+
+    // Render Grid Cards & Table Rows
+    const facultyGrid = document.getElementById("facultyGrid");
+    const facultyTableBody = document.getElementById("facultyTableBody");
+    const emptyState = document.getElementById("emptyState");
+
+    function renderFacultyList(data) {
+        facultyGrid.innerHTML = "";
+        facultyTableBody.innerHTML = "";
+
+        if (data.length === 0) {
+            emptyState.style.display = "block";
+            return;
+        } else {
+            emptyState.style.display = "none";
+        }
+
+        data.forEach(faculty => {
+            const initials = getInitials(faculty.name);
+            const statusClass = faculty.status.toLowerCase();
+
+            // 1. Build Grid Card
+            const card = document.createElement("article");
+            card.className = "faculty-card";
+            card.dataset.id = faculty.id;
+
+            card.innerHTML = `
+                <div class="card-top-accent"></div>
+                <div class="card-body">
+                    <div class="card-header-row">
+                        <div class="card-avatar">${initials}</div>
+                        <div class="card-title-group">
+                            <h3 class="faculty-name" title="${faculty.name}">${faculty.name}</h3>
+                            <p class="faculty-designation">${faculty.designation}</p>
+                            <span class="faculty-dept-pill">${faculty.department}</span>
+                        </div>
+                    </div>
+
+                    <div class="card-badge-row">
+                        <span class="fac-code-tag">${faculty.code}</span>
+                        <span class="status-badge ${statusClass}">${faculty.statusLabel}</span>
+                    </div>
+
+                    <div class="card-meta-list">
+                        <div class="meta-item">
+                            <span class="meta-icon">✉</span>
+                            <span class="meta-text" title="${faculty.email}">${faculty.email}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">🏢</span>
+                            <span class="meta-text">${faculty.cabin}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">⏳</span>
+                            <span class="meta-text">Exp: <strong>${faculty.experience}</strong> (${faculty.specialization ? faculty.specialization.split(',')[0] : 'CSE'})</span>
+                        </div>
+                    </div>
+
+                    <div class="subjects-tags-row">
+                        ${faculty.subjects ? faculty.subjects.slice(0, 2).map(s => `<span class="subject-tag">${s.name}</span>`).join('') : ''}
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="button" class="btn-view-profile" data-id="${faculty.id}">
+                        <span>👁</span> View Profile
+                    </button>
+                    <a href="mailto:${faculty.email}" class="btn-icon-action" title="Send Email">
+                        <span>✉</span>
+                    </a>
+                </div>
+            `;
+            facultyGrid.appendChild(card);
+
+            // 2. Build Table Row
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>
+                    <div class="table-user-cell">
+                        <div class="table-avatar">${initials}</div>
+                        <div class="table-user-info">
+                            <span class="table-user-name">${faculty.name}</span>
+                            <span class="table-user-email">${faculty.email}</span>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="fac-code-tag">${faculty.code}</span></td>
+                <td>${faculty.department}</td>
+                <td><strong>${faculty.designation}</strong></td>
+                <td>${faculty.specialization ? faculty.specialization.split(',').slice(0, 2).join(', ') : 'Computer Engineering'}</td>
+                <td>${faculty.cabin}</td>
+                <td><span class="status-badge ${statusClass}">${faculty.statusLabel}</span></td>
+                <td>
+                    <div class="table-actions-cell">
+                        <button type="button" class="btn-view-profile" data-id="${faculty.id}" style="padding: 6px 12px; font-size: 11px;">
+                            <span>👁</span> View Profile
+                        </button>
+                        <a href="mailto:${faculty.email}" class="btn-icon-action" style="width: 30px; height: 30px;" title="Send Email">✉</a>
+                    </div>
+                </td>
+            `;
+            facultyTableBody.appendChild(tr);
+        });
+
+        // Attach click events to all "View Profile" buttons
+        document.querySelectorAll(".btn-view-profile").forEach(btn => {
+            btn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const facultyId = this.getAttribute("data-id");
+                openFacultyProfileModal(facultyId);
+            });
+        });
+    }
+
+    // Modal Elements
+    const modal = document.getElementById("facultyProfileModal");
+    const modalCloseX = document.getElementById("modalCloseXBtn");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const printBtn = document.getElementById("btnPrintProfile");
+    const mailBtn = document.getElementById("btnMailFaculty");
+
+    // Open Profile Modal with Full Faculty Information
+    function openFacultyProfileModal(facultyId) {
+        let faculty = sampleFacultyData.find(f => f.id == facultyId);
+        if (!faculty) {
+            faculty = sampleFacultyData[0];
+        }
+
+        // 1. Header Banner Information
+        document.getElementById("modalFacultyAvatar").textContent = getInitials(faculty.name);
+        document.getElementById("modalFacultyName").textContent = faculty.name;
+        document.getElementById("modalFacultyDesignation").textContent = faculty.designation;
+        document.getElementById("modalFacultyDept").textContent = faculty.department;
+        document.getElementById("modalFacultyCode").textContent = faculty.code;
+
+        const statusBadge = document.getElementById("modalFacultyStatus");
+        statusBadge.className = `status-badge ${faculty.status.toLowerCase()}`;
+        statusBadge.textContent = faculty.statusLabel;
+
+        // 2. Tab 1: Overview & Contact
+        document.getElementById("modalEmail").textContent = faculty.email;
+        document.getElementById("modalPhone").textContent = faculty.phone || "+91 98765 00000";
+        document.getElementById("modalCabin").textContent = faculty.cabin || "Department Faculty Wing";
+        document.getElementById("modalJoinDate").textContent = faculty.joinDate || "N/A";
+        document.getElementById("modalEmpType").textContent = faculty.experience.includes("Lecturer") ? "Permanent / State Service" : "Regular / Full-Time";
+        document.getElementById("modalOfficeHours").textContent = faculty.officeHours || "Mon - Fri: 03:00 PM – 04:30 PM";
+        document.getElementById("modalBio").textContent = faculty.bio || `${faculty.name} is a dedicated educator and technical faculty in the ${faculty.department}.`;
+
+        // 3. Tab 2: Qualifications & Experience
+        const degreesContainer = document.getElementById("modalDegreesList");
+        degreesContainer.innerHTML = "";
+        if (faculty.degrees && faculty.degrees.length > 0) {
+            faculty.degrees.forEach(deg => {
+                const item = document.createElement("div");
+                item.className = "workload-chip";
+                item.innerHTML = `
+                    <div>
+                        <div class="chip-title">${deg.title}</div>
+                        <div class="chip-sub">${deg.institute}</div>
+                    </div>
+                    <span class="chip-badge">${deg.badge}</span>
+                `;
+                degreesContainer.appendChild(item);
+            });
+        } else {
+            degreesContainer.innerHTML = `
+                <div class="workload-chip">
+                    <div>
+                        <div class="chip-title">Master of Technology (M.Tech) in Computer Engineering</div>
+                        <div class="chip-sub">State Technological University</div>
+                    </div>
+                    <span class="chip-badge">Post Graduate</span>
+                </div>
+            `;
+        }
+
+        document.getElementById("modalTotalExp").textContent = faculty.experience;
+        document.getElementById("modalIndustryExp").textContent = faculty.industryExp || "2+ Years";
+        document.getElementById("modalSpecialization").textContent = faculty.specialization || "Computer Science & Engineering";
+        document.getElementById("modalCertifications").textContent = faculty.certifications || "Technical Educator Certified";
+
+        // 4. Tab 3: Teaching & Workload
+        const subjectsContainer = document.getElementById("modalSubjectLoadList");
+        subjectsContainer.innerHTML = "";
+        if (faculty.subjects && faculty.subjects.length > 0) {
+            faculty.subjects.forEach(sub => {
+                const subItem = document.createElement("div");
+                subItem.className = "workload-chip";
+                subItem.innerHTML = `
+                    <div>
+                        <div class="chip-title">${sub.code}: ${sub.name}</div>
+                        <div class="chip-sub">${sub.sem} · Theory & Tutorials</div>
+                    </div>
+                    <span class="chip-badge">${sub.hours}</span>
+                `;
+                subjectsContainer.appendChild(subItem);
+            });
+        } else {
+            subjectsContainer.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Standard department workload assigned.</p>`;
+        }
+
+        document.getElementById("modalLabIncharge").textContent = faculty.labIncharge || "Computing Center";
+        document.getElementById("modalMentorBatch").textContent = faculty.mentorBatch || "Diploma Computer Engineering";
+        document.getElementById("modalTheoryHours").textContent = faculty.theoryHours || "8 Hours / Week";
+        document.getElementById("modalLabHours").textContent = faculty.labHours || "6 Hours / Week";
+
+        // 5. Tab 4: Research & Contributions
+        document.getElementById("modalJournalsCount").textContent = faculty.journals || "Published Research Papers";
+        document.getElementById("modalConferencesCount").textContent = faculty.conferences || "National Conferences";
+        document.getElementById("modalPatents").textContent = faculty.patents || "Under Review";
+        document.getElementById("modalCommittee").textContent = faculty.committee || "Department Academic Committee";
+
+        const tagsContainer = document.getElementById("modalResearchTags");
+        tagsContainer.innerHTML = "";
+        if (faculty.researchTags && faculty.researchTags.length > 0) {
+            faculty.researchTags.forEach(tag => {
+                const span = document.createElement("span");
+                span.className = "subject-tag";
+                span.textContent = tag;
+                tagsContainer.appendChild(span);
+            });
+        } else {
+            tagsContainer.innerHTML = `<span class="subject-tag">Computer Engineering</span><span class="subject-tag">Information Systems</span>`;
+        }
+
+        // Action links
+        mailBtn.href = `mailto:${faculty.email}`;
+
+        // Reset to first tab
+        switchModalTab("tab-overview");
+
+        // Show Modal
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+        modal.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    // Modal Tab Switching
+    function switchModalTab(targetTabId) {
+        document.querySelectorAll(".modal-tab-btn").forEach(btn => {
+            if (btn.getAttribute("data-tab") === targetTabId) {
+                btn.classList.add("active");
+            } else {
+                btn.classList.remove("active");
+            }
+        });
+
+        document.querySelectorAll(".tab-pane").forEach(pane => {
+            if (pane.id === targetTabId) {
+                pane.classList.add("active");
+            } else {
+                pane.classList.remove("active");
+            }
+        });
+    }
+
+    document.querySelectorAll(".modal-tab-btn").forEach(btn => {
+        btn.addEventListener("click", function () {
+            const target = this.getAttribute("data-tab");
+            switchModalTab(target);
+        });
+    });
+
+    modalCloseX.addEventListener("click", closeModal);
+    modalCloseBtn.addEventListener("click", closeModal);
+
+    // Close on clicking backdrop
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modal.classList.contains("active")) {
+            closeModal();
+        }
+    });
+
+    // Print Profile Button
+    printBtn.addEventListener("click", function () {
+        window.print();
+    });
+
+    // "My Profile" Quick Action Buttons
+    function openCurrentUserProfile() {
+        // Try to find matching user in sampleFacultyData by email or name
+        let myFaculty = sampleFacultyData.find(f =>
+            f.email.toLowerCase() === currentUser.email.toLowerCase() ||
+            f.name.toLowerCase().includes(currentUser.name.toLowerCase())
+        );
+
+        if (!myFaculty) {
+            // Create on the fly from current user
+            myFaculty = {
+                id: "current-user",
+                code: "FAC-GPH-ME",
+                name: currentUser.name,
+                designation: currentUser.role === "hod" ? "Head of Department (HOD)" : "Assistant Professor",
+                category: currentUser.role === "hod" ? "Professor" : "Assistant Professor",
+                department: currentUser.department || "Computer Engineering",
+                email: currentUser.email,
+                phone: "+91 98220 12345",
+                cabin: currentUser.role === "hod" ? "HOD Office, Ground Floor" : "Faculty Cabin 204",
+                joinDate: "01 August 2019",
+                experience: "7+ Years",
+                industryExp: "2 Years",
+                status: "Active",
+                statusLabel: "Available",
+                officeHours: "Daily: 11:00 AM – 01:00 PM & 03:00 PM – 04:30 PM",
+                bio: `${currentUser.name} is currently serving as ${currentUser.role.toUpperCase()} in the ${currentUser.department || 'Computer Engineering'} department at Government Polytechnic.`,
+                degrees: [
+                    { title: "Ph.D. / M.Tech in Computer Engineering", institute: "Recognized Technical University", badge: "First Class" },
+                    { title: "B.Tech in Computer Science & Engineering", institute: "State University", badge: "Distinction" }
+                ],
+                specialization: "Advanced Computing, Network Architecture, Software Systems",
+                certifications: "Department Management & Technical Educator Certification",
+                labIncharge: "Main Computer Department Lab",
+                mentorBatch: "Academic Year 2026-27 Batches",
+                theoryHours: "8 Hours / Week",
+                labHours: "6 Hours / Week",
+                subjects: [
+                    { code: "CS-501", name: "Advanced Computing & Architecture", sem: "Semester 5", hours: "4 Hrs/Week" },
+                    { code: "CS-502P", name: "Department Lab & Practical", sem: "Semester 5", hours: "6 Hrs/Week" }
+                ],
+                journals: "8 Research Publications",
+                conferences: "10 Conferences & Workshops",
+                patents: "1 Patent Filed",
+                committee: currentUser.role === "hod" ? "Chairman, Board of Studies" : "Department Academic In-charge",
+                researchTags: ["Computer Science", "Information Systems", "Educational Technology"]
+            };
+        }
+        openFacultyProfileModal(myFaculty.id || "current-user");
+    }
+
+    document.getElementById("myProfileBtn").addEventListener("click", openCurrentUserProfile);
+    document.getElementById("heroViewProfileBtn").addEventListener("click", openCurrentUserProfile);
+
+    // Search and Filtering System
+    const searchInput = document.getElementById("facultySearchInput");
+    const deptFilter = document.getElementById("deptFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const designationTabs = document.querySelectorAll("#designationTabs .category-tab");
+    let activeDesignation = "all";
+
+    function filterFaculty() {
+        const query = searchInput.value.toLowerCase().trim();
+        const dept = deptFilter.value;
+        const status = statusFilter.value;
+
+        const filtered = sampleFacultyData.filter(fac => {
+            // Text Search
+            const matchesText = !query ||
+                fac.name.toLowerCase().includes(query) ||
+                fac.code.toLowerCase().includes(query) ||
+                fac.email.toLowerCase().includes(query) ||
+                fac.designation.toLowerCase().includes(query) ||
+                fac.department.toLowerCase().includes(query) ||
+                (fac.specialization && fac.specialization.toLowerCase().includes(query)) ||
+                (fac.subjects && fac.subjects.some(s => s.name.toLowerCase().includes(query)));
+
+            // Tab Filter (Designation)
+            const matchesCategory = (activeDesignation === "all") ||
+                fac.category.toLowerCase() === activeDesignation.toLowerCase() ||
+                fac.designation.toLowerCase().includes(activeDesignation.toLowerCase());
+
+            // Dropdown filters
+            const matchesDept = (dept === "all") || (fac.department === dept);
+            const matchesStatus = (status === "all") || (fac.status === status);
+
+            return matchesText && matchesCategory && matchesDept && matchesStatus;
+        });
+
+        renderFacultyList(filtered);
+    }
+
+    searchInput.addEventListener("input", filterFaculty);
+    deptFilter.addEventListener("change", filterFaculty);
+    statusFilter.addEventListener("change", filterFaculty);
+
+    designationTabs.forEach(tab => {
+        tab.addEventListener("click", function () {
+            designationTabs.forEach(t => t.classList.remove("active"));
+            this.classList.add("active");
+            activeDesignation = this.getAttribute("data-filter");
+            filterFaculty();
+        });
+    });
+
+    document.getElementById("resetFiltersBtn").addEventListener("click", function () {
+        searchInput.value = "";
+        deptFilter.value = "all";
+        statusFilter.value = "all";
+        activeDesignation = "all";
+        designationTabs.forEach(t => t.classList.remove("active"));
+        designationTabs[0].classList.add("active");
+        filterFaculty();
+    });
+
+    // View Toggle (Cards vs Table)
+    const btnGridView = document.getElementById("btnGridView");
+    const btnTableView = document.getElementById("btnTableView");
+    const facultyTableWrap = document.getElementById("facultyTableWrap");
+
+    btnGridView.addEventListener("click", function () {
+        btnGridView.classList.add("active");
+        btnTableView.classList.remove("active");
+        facultyGrid.classList.remove("hidden");
+        facultyTableWrap.classList.remove("active");
+    });
+
+    btnTableView.addEventListener("click", function () {
+        btnTableView.classList.add("active");
+        btnGridView.classList.remove("active");
+        facultyGrid.classList.add("hidden");
+        facultyTableWrap.classList.add("active");
+    });
+
+    // Initial render
+    renderFacultyList(sampleFacultyData);
+</script>
+{% endblock %}

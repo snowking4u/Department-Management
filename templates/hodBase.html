@@ -22,16 +22,16 @@
 
         <nav>
 
-            <a href="{{ url_for('hod_dashboard') }}" class="active">
+            <a href="{{ url_for('faculty') if session.get('user_role') == 'faculty' else url_for('hod_dashboard') }}" class="{{ 'active' if (request.endpoint == 'hod_dashboard' or (request.endpoint == 'faculty' and session.get('user_role') == 'faculty')) else '' }}">
                 Dashboard
             </a>
-            <a href="{{ url_for('register') }}" >Account Registration</a>
+            <a href="{{ url_for('register') }}" class="{{ 'active' if request.endpoint == 'register' else '' }}">Account Registration</a>
 
-            <a href="{{ url_for('student_management') }}">
+            <a href="{{ url_for('student_management') }}" class="{{ 'active' if request.endpoint == 'student_management' else '' }}">
                 Student Management
             </a>
 
-            <a href="{{ url_for('faculty') }}">
+            <a href="{{ url_for('faculty') }}" class="{{ 'active' if request.endpoint == 'faculty' and session.get('user_role') != 'faculty' else '' }}">
                 Faculty Management
             </a>
 
@@ -72,7 +72,6 @@
     </aside>
 
    {%block content%} {%endblock%}
-  </div>
   {% block scripts %}
     {% endblock %}
 </body>
