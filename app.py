@@ -70,7 +70,6 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/hod-dashboard")
 @app.route("/hod_dashboard")
 def hod_dashboard():
     if "user_id" not in session:
@@ -82,7 +81,6 @@ def hod_dashboard():
     return render_template("hod_dashboard.html")
 
 
-@app.route("/students")
 @app.route("/student-management")
 def student_management():
     if "user_id" not in session:

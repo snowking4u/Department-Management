@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{%block title%}HOD Dashboard{%endblock%}</title>
+
+    <link rel="stylesheet" href="{% block stylesheets %}{%endblock%}">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>GPH</h2>
+            <p>Department Management System</p>
+        </div>
+
+        <nav>
+
+            <a href="{{ url_for('hod_dashboard') }}" class="active">
+                Dashboard
+            </a>
+            <a href="{{ url_for('register') }}" >Account Registration</a>
+
+            <a href="{{ url_for('student_management') }}">
+                Student Management
+            </a>
+
+            <a href="{{ url_for('faculty') }}">
+                Faculty Management
+            </a>
+
+            <a href="#">
+                Course / Subject Management
+            </a>
+
+            <a href="#">
+                Timetable Management
+            </a>
+
+            <a href="#">
+                Attendance Overview
+            </a>
+
+            <a href="#">
+                Notice Management
+            </a>
+
+            <a href="#">
+                Events Management
+            </a>
+
+            <a href="#">
+                Leave / Request Approval
+            </a>
+
+            <a href="#">
+                Reports & Analytics
+            </a>
+
+        </nav>
+
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+    </aside>
+
+   {%block content%} {%endblock%}
+  </div>
+  {% block scripts %}
+    {% endblock %}
+</body>
+</html>

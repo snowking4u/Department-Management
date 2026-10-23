@@ -1,266 +1,147 @@
-<!DOCTYPE html>
-<html lang="en">
+{%extends "hodBase.html"%}
+<link rel="stylesheet" href="{% block stylesheets %}{{ url_for('static', filename='css/dashboard.css') }}{%endblock%}">
+{%block content%}
+<!-- MAIN CONTENT -->
+<main class="main-content">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- TOP BAR -->
+    <header class="topbar">
 
-    <title>HOD Dashboard</title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-</head>
-
-<body>
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-        <div class="logo">
-            <h2>GPH</h2>
-            <p>Department Management System</p>
+        <div>
+            <h1>HOD Dashboard</h1>
+            <p>Computer Engineering Department</p>
         </div>
 
-        <nav>
-
-            <a href="{{ url_for('hod_dashboard') }}" class="active">
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('student_management') }}">
-                Student Management
-            </a>
-
-            <a href="{{ url_for('faculty') }}">
-                Faculty Management
-            </a>
-
-            <a href="#">
-                Course / Subject Management
-            </a>
-
-            <a href="#">
-                Timetable Management
-            </a>
-
-            <a href="#">
-                Attendance Overview
-            </a>
-
-            <a href="#">
-                Notice Management
-            </a>
-
-            <a href="#">
-                Events Management
-            </a>
-
-            <a href="#">
-                Leave / Request Approval
-            </a>
-
-            <a href="#">
-                Reports & Analytics
-            </a>
-
-        </nav>
-
-        <div class="logout">
-            <a href="{{ url_for('logout') }}">Logout</a>
-        </div>
-
-    </aside>
-
-
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-
-        <!-- TOP BAR -->
-        <header class="topbar">
+        <div class="profile">
+            <div class="profile-icon">{{ (session.get('user_name', 'HOD')|first)|upper }}</div>
 
             <div>
-                <h1>HOD Dashboard</h1>
-                <p>Computer Engineering Department</p>
+                <strong>{{ session.get('user_name', 'HOD') }}</strong>
+                <small>Head of Department</small>
+            </div>
+        </div>
+
+    </header>
+
+
+    <!-- WELCOME SECTION -->
+    <section class="welcome">
+
+        <h2>Welcome, {{ session.get('user_name', 'HOD') }}</h2>
+
+        <p>
+            Monitor, manage, approve and analyze department activities
+            from one place.
+        </p>
+
+    </section>
+
+
+    <!-- OVERVIEW CARDS -->
+    <section class="overview">
+
+        <div class="card">
+            <h3>Total Students</h3>
+            <p class="number">180</p>
+            <span>Department Students</span>
+        </div>
+
+        <div class="card">
+            <h3>Total Faculty</h3>
+            <p class="number">12</p>
+            <span>Department Faculty</span>
+        </div>
+
+        <div class="card">
+            <h3>Attendance</h3>
+            <p class="number">87%</p>
+            <span>Overall Attendance</span>
+        </div>
+
+        <div class="card">
+            <h3>Notices</h3>
+            <p class="number">5</p>
+            <span>Published Notices</span>
+        </div>
+
+        <div class="card">
+            <h3>Events</h3>
+            <p class="number">3</p>
+            <span>Upcoming Events</span>
+        </div>
+
+    </section>
+
+
+    <!-- QUICK ACTIONS -->
+    <section class="dashboard-section">
+
+        <div class="section-header">
+            <h2>Quick Actions</h2>
+        </div>
+
+        <div class="quick-actions">
+
+            <a class="quick-action primary" href="{{ url_for('register', role='student') }}">
+                <span class="quick-action-icon" aria-hidden="true">+</span>
+                <span><strong>Add Student</strong><small>Create a student account</small></span>
+            </a>
+
+            <a class="quick-action" href="{{ url_for('register', role='faculty') }}">
+                <span class="quick-action-icon" aria-hidden="true">+</span>
+                <span><strong>Add Faculty</strong><small>Create a faculty account</small></span>
+            </a>
+
+            <a class="quick-action" href="{{ url_for('register', role='hod') }}">
+                <span class="quick-action-icon" aria-hidden="true">+</span>
+                <span><strong>Add HOD</strong><small>Create an HOD account</small></span>
+            </a>
+
+            <button>Manage Subjects</button>
+
+            <button>Create Timetable</button>
+
+            <button>Publish Notice</button>
+
+            <button>Add Event</button>
+
+        </div>
+
+    </section>
+
+
+    <!-- RECENT ACTIVITIES -->
+    <section class="dashboard-section">
+
+        <div class="section-header">
+            <h2>Recent Activities</h2>
+        </div>
+
+        <div class="activity-list">
+
+            <div class="activity">
+                <strong>New student added</strong>
+                <span>Student Management</span>
             </div>
 
-            <div class="profile">
-                <div class="profile-icon">{{ (session.get('user_name', 'HOD')|first)|upper }}</div>
-
-                <div>
-                    <strong>{{ session.get('user_name', 'HOD') }}</strong>
-                    <small>Head of Department</small>
-                </div>
+            <div class="activity">
+                <strong>New notice published</strong>
+                <span>Notice Management</span>
             </div>
 
-        </header>
-
-
-        <!-- WELCOME SECTION -->
-        <section class="welcome">
-
-            <h2>Welcome, {{ session.get('user_name', 'HOD') }}</h2>
-
-            <p>
-                Monitor, manage, approve and analyze department activities
-                from one place.
-            </p>
-
-        </section>
-
-
-        <!-- OVERVIEW CARDS -->
-        <section class="overview">
-
-            <div class="card">
-                <h3>Total Students</h3>
-                <p class="number">180</p>
-                <span>Department Students</span>
+            <div class="activity">
+                <strong>Faculty workload updated</strong>
+                <span>Faculty Management</span>
             </div>
 
-            <div class="card">
-                <h3>Total Faculty</h3>
-                <p class="number">12</p>
-                <span>Department Faculty</span>
+            <div class="activity">
+                <strong>Timetable updated</strong>
+                <span>Timetable Management</span>
             </div>
 
-            <div class="card">
-                <h3>Attendance</h3>
-                <p class="number">87%</p>
-                <span>Overall Attendance</span>
-            </div>
+        </div>
 
-            <div class="card">
-                <h3>Notices</h3>
-                <p class="number">5</p>
-                <span>Published Notices</span>
-            </div>
+    </section>
 
-            <div class="card">
-                <h3>Events</h3>
-                <p class="number">3</p>
-                <span>Upcoming Events</span>
-            </div>
-
-        </section>
-
-
-        <!-- QUICK ACTIONS -->
-        <section class="dashboard-section">
-
-            <div class="section-header">
-                <h2>Quick Actions</h2>
-            </div>
-
-            <div class="quick-actions">
-
-                <a class="quick-action primary" href="{{ url_for('register', role='student') }}">
-                    <span class="quick-action-icon" aria-hidden="true">+</span>
-                    <span><strong>Add Student</strong><small>Create a student account</small></span>
-                </a>
-
-                <a class="quick-action" href="{{ url_for('register', role='faculty') }}">
-                    <span class="quick-action-icon" aria-hidden="true">+</span>
-                    <span><strong>Add Faculty</strong><small>Create a faculty account</small></span>
-                </a>
-
-                <a class="quick-action" href="{{ url_for('register', role='hod') }}">
-                    <span class="quick-action-icon" aria-hidden="true">+</span>
-                    <span><strong>Add HOD</strong><small>Create an HOD account</small></span>
-                </a>
-
-                <button>Manage Subjects</button>
-
-                <button>Create Timetable</button>
-
-                <button>Publish Notice</button>
-
-                <button>Add Event</button>
-
-            </div>
-
-        </section>
-
-
-        <!-- RECENT ACTIVITIES -->
-        <section class="dashboard-section">
-
-            <div class="section-header">
-                <h2>Recent Activities</h2>
-            </div>
-
-            <div class="activity-list">
-
-                <div class="activity">
-                    <strong>New student added</strong>
-                    <span>Student Management</span>
-                </div>
-
-                <div class="activity">
-                    <strong>New notice published</strong>
-                    <span>Notice Management</span>
-                </div>
-
-                <div class="activity">
-                    <strong>Faculty workload updated</strong>
-                    <span>Faculty Management</span>
-                </div>
-
-                <div class="activity">
-                    <strong>Timetable updated</strong>
-                    <span>Timetable Management</span>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- HOD RESPONSIBILITIES -->
-        <section class="dashboard-section">
-
-            <div class="section-header">
-                <h2>HOD Responsibilities</h2>
-            </div>
-
-            <div class="responsibilities">
-
-                <div>
-                    <h3>Monitor</h3>
-                    <p>
-                        Monitor students, faculty, attendance and
-                        department activities.
-                    </p>
-                </div>
-
-                <div>
-                    <h3>Manage</h3>
-                    <p>
-                        Manage students, faculty, subjects,
-                        timetable, notices and events.
-                    </p>
-                </div>
-
-                <div>
-                    <h3>Approve</h3>
-                    <p>
-                        Review and approve student and faculty
-                        requests.
-                    </p>
-                </div>
-
-                <div>
-                    <h3>Analyze</h3>
-                    <p>
-                        Analyze attendance, academic performance
-                        and faculty workload.
-                    </p>
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</body>
-
-</html>
+</main>
+{%endblock%}
