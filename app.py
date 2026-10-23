@@ -43,7 +43,6 @@ class User(db.Model):
     department = db.Column(db.String(100), nullable=True)
 
 
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
