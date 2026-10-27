@@ -1,147 +1,387 @@
-{%extends "hodBase.html"%}
-<link rel="stylesheet" href="{% block stylesheets %}{{ url_for('static', filename='css/dashboard.css') }}{%endblock%}">
-{%block content%}
-<!-- MAIN CONTENT -->
-<main class="main-content">
 
-    <!-- TOP BAR -->
+{% extends "hodBase.html" %}
+
+{% block title %}HOD Dashboard | GPH{% endblock %}
+
+{% block stylesheets %}
+{{ url_for('static', filename='css/dashboard.css') }}
+{% endblock %}
+
+{% block content %}
+<main class="main-content hod-dashboard">
+
+    <!-- TOPBAR -->
     <header class="topbar">
+        <div class="topbar-heading">
+            <div class="topbar-breadcrumb">
+                <span class="breadcrumb-dot"></span>
+                DEPARTMENT MANAGEMENT SYSTEM
+            </div>
 
-        <div>
             <h1>HOD Dashboard</h1>
-            <p>Computer Engineering Department</p>
+
+            <p class="topbar-subtitle">
+                Computer Engineering Department
+                <span class="subtitle-divider">/</span>
+                Government Polytechnic Hamirpur
+            </p>
         </div>
 
         <div class="profile">
-            <div class="profile-icon">{{ (session.get('user_name', 'HOD')|first)|upper }}</div>
+            <div class="profile-status">
+                <span class="status-dot"></span>
+                Admin Account
+            </div>
 
-            <div>
-                <strong>{{ session.get('user_name', 'HOD') }}</strong>
-                <small>Head of Department</small>
+            <div class="profile-details">
+                <div class="profile-icon">
+                    {{ (session.get('user_name', 'HOD')|first)|upper }}
+                </div>
+
+                <div class="profile-text">
+                    <strong>{{ session.get('user_name', 'HOD') }}</strong>
+                    <span>Head of Department</span>
+                </div>
+
+                <div class="profile-role">HOD</div>
             </div>
         </div>
-
     </header>
 
-
-    <!-- WELCOME SECTION -->
+    <!-- WELCOME -->
     <section class="welcome">
+        <div>
+            <p class="eyebrow">DEPARTMENT OVERVIEW</p>
+            <h2>Welcome, {{ session.get('user_name', 'HOD') }}</h2>
+            <p>
+                Monitor student strength, attendance concerns and
+                department activities from one place.
+            </p>
+        </div>
 
-        <h2>Welcome, {{ session.get('user_name', 'HOD') }}</h2>
+        <div class="welcome-mark" aria-hidden="true">GPH</div>
+    </section>
 
-        <p>
-            Monitor, manage, approve and analyze department activities
-            from one place.
-        </p>
+    <!-- SUMMARY CARDS -->
+    <section class="overview" aria-label="Department summary">
+
+        <article class="stat-card stat-blue">
+            <div class="stat-icon" aria-hidden="true">♟</div>
+            <div class="stat-copy">
+                <h3>Active Students</h3>
+                <p class="number">
+                    {{ total_students if total_students is defined else '—' }}
+                </p>
+                <span>Currently enrolled students</span>
+            </div>
+        </article>
+
+        <article class="stat-card stat-green">
+            <div class="stat-icon" aria-hidden="true">♧</div>
+            <div class="stat-copy">
+                <h3>Lecturers</h3>
+                <p class="number">
+                    {{ total_faculty if total_faculty is defined else '—' }}
+                </p>
+                <span>Department faculty members</span>
+            </div>
+        </article>
+
+        <article class="stat-card stat-red">
+            <div class="stat-icon" aria-hidden="true">!</div>
+            <div class="stat-copy">
+                <h3>Students with Low Attendance</h3>
+                <p class="number">
+                    {{ low_attendance_count if low_attendance_count is defined else '—' }}
+                </p>
+                <span>Below required attendance</span>
+            </div>
+        </article>
 
     </section>
 
+    <!-- STUDENT DISTRIBUTION + ATTENDANCE -->
+    <section class="dashboard-grid dashboard-grid-primary">
 
-    <!-- OVERVIEW CARDS -->
-    <section class="overview">
+        <!-- SEMESTER DISTRIBUTION -->
+        <article class="dashboard-section semester-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">STUDENT OVERVIEW</p>
+                    <h2>Semester-wise Student Distribution</h2>
+                </div>
+                <span class="section-chip">3rd–6th Semester</span>
+            </div>
 
-        <div class="card">
-            <h3>Total Students</h3>
-            <p class="number">180</p>
-            <span>Department Students</span>
-        </div>
+            <div class="semester-content">
+                <div class="donut-wrap">
+                    <div class="donut-chart"
+                         role="img"
+                         aria-label="Student distribution across semesters">
 
-        <div class="card">
-            <h3>Total Faculty</h3>
-            <p class="number">12</p>
-            <span>Department Faculty</span>
-        </div>
+                        <div class="donut-hole">
+                            <strong>
+                                {{ total_students if total_students is defined else '—' }}
+                            </strong>
+                            <span>Students</span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="card">
-            <h3>Attendance</h3>
-            <p class="number">87%</p>
-            <span>Overall Attendance</span>
-        </div>
+                <div class="semester-legend">
+                    {% for sem in [3, 4, 5, 6] %}
+                    <div class="legend-row">
+                        <span class="legend-label">
+                            <i class="legend-dot sem-{{ sem }}"></i>
+                            {{ sem }}{{ 'rd' if sem == 3 else 'th' }} Semester
+                        </span>
 
-        <div class="card">
-            <h3>Notices</h3>
-            <p class="number">5</p>
-            <span>Published Notices</span>
-        </div>
+                        <strong>
+                            {{ semester_counts[sem] if semester_counts is defined and sem in semester_counts else '—' }}
+                        </strong>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
 
-        <div class="card">
-            <h3>Events</h3>
-            <p class="number">3</p>
-            <span>Upcoming Events</span>
-        </div>
+            <p class="panel-note">
+                Semester counts are displayed when student records are connected.
+            </p>
+        </article>
+
+        <!-- LOW ATTENDANCE TABLE -->
+        <article class="dashboard-section low-attendance-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">NEEDS ATTENTION</p>
+                    <h2>Low Attendance Students</h2>
+                </div>
+                <span class="attention-badge">Below 75%</span>
+            </div>
+
+            <div class="table-wrap">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Semester</th>
+                            <th>Attendance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if low_attendance_students is defined and low_attendance_students %}
+                            {% for student in low_attendance_students[:5] %}
+                            <tr>
+                                <td>
+                                    <strong>{{ student.name }}</strong>
+                                    <small>
+                                        {{ student.roll_number if student.roll_number is defined else student.roll_no if student.roll_no is defined else '' }}
+                                    </small>
+                                </td>
+
+                                <td>{{ student.semester }}</td>
+
+                                <td>
+                                    <span class="attendance-pill">
+                                        {{ student.attendance_percentage if student.attendance_percentage is defined else student.attendance if student.attendance is defined else '—' }}{% if student.attendance_percentage is defined or student.attendance is defined %}%{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="empty-state">
+                                    No low-attendance records available.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="panel-note">
+                Attendance figures depend on the records supplied by Flask.
+            </p>
+        </article>
 
     </section>
 
+    <!-- QUICK ACTIONS + ACTIVITIES -->
+    <section class="dashboard-grid dashboard-grid-secondary">
 
-    <!-- QUICK ACTIONS -->
-    <section class="dashboard-section">
+        <!-- QUICK ACTIONS -->
+        <article class="dashboard-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">SHORTCUTS</p>
+                    <h2>Quick Actions</h2>
+                </div>
+            </div>
 
-        <div class="section-header">
-            <h2>Quick Actions</h2>
-        </div>
+            <div class="quick-actions-grid">
 
-        <div class="quick-actions">
+                <a class="quick-action action-blue"
+                   href="{{ url_for('register', role='student') }}">
+                    <span class="action-icon">＋</span>
+                    <span class="action-copy">
+                        <strong>Add Student</strong>
+                        <small>Create student account</small>
+                    </span>
+                </a>
 
-            <a class="quick-action primary" href="{{ url_for('register', role='student') }}">
-                <span class="quick-action-icon" aria-hidden="true">+</span>
-                <span><strong>Add Student</strong><small>Create a student account</small></span>
-            </a>
+                <a class="quick-action action-green"
+                   href="{{ url_for('register', role='faculty') }}">
+                    <span class="action-icon">＋</span>
+                    <span class="action-copy">
+                        <strong>Add Lecturer</strong>
+                        <small>Create faculty account</small>
+                    </span>
+                </a>
 
-            <a class="quick-action" href="{{ url_for('register', role='faculty') }}">
-                <span class="quick-action-icon" aria-hidden="true">+</span>
-                <span><strong>Add Faculty</strong><small>Create a faculty account</small></span>
-            </a>
+                <a class="quick-action action-orange"
+                   href="{{ url_for('student_management') }}">
+                    <span class="action-icon">▤</span>
+                    <span class="action-copy">
+                        <strong>Student Records</strong>
+                        <small>View student details</small>
+                    </span>
+                </a>
 
-            <a class="quick-action" href="{{ url_for('register', role='hod') }}">
-                <span class="quick-action-icon" aria-hidden="true">+</span>
-                <span><strong>Add HOD</strong><small>Create an HOD account</small></span>
-            </a>
+                <a class="quick-action action-purple"
+                   href="{{ url_for('faculty') }}">
+                    <span class="action-icon">▣</span>
+                    <span class="action-copy">
+                        <strong>Faculty Management</strong>
+                        <small>Manage faculty records</small>
+                    </span>
+                </a>
 
-            <button>Manage Subjects</button>
+                <a class="quick-action action-slate"
+                   href="{{ url_for('register') }}">
+                    <span class="action-icon">＋</span>
+                    <span class="action-copy">
+                        <strong>Account Registration</strong>
+                        <small>Open registration page</small>
+                    </span>
+                </a>
 
-            <button>Create Timetable</button>
+            </div>
+        </article>
 
-            <button>Publish Notice</button>
+        <!-- RECENT ACTIVITIES -->
+        <article class="dashboard-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">LATEST UPDATES</p>
+                    <h2>Recent Activities</h2>
+                </div>
+            </div>
 
-            <button>Add Event</button>
+            <div class="activity-list">
+                {% if recent_activities is defined and recent_activities %}
+                    {% for activity in recent_activities[:5] %}
+                    <div class="activity">
+                        <span class="activity-marker"></span>
 
-        </div>
+                        <div class="activity-body">
+                            <strong>
+                                {{ activity.title if activity.title is defined else activity.action }}
+                            </strong>
+                            <span>
+                                {{ activity.description if activity.description is defined else activity.details if activity.details is defined else '' }}
+                            </span>
+                        </div>
+
+                        <time>
+                            {{ activity.time if activity.time is defined else activity.created_at if activity.created_at is defined else '' }}
+                        </time>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="activity">
+                        <span class="activity-marker"></span>
+                        <div class="activity-body">
+                            <strong>No recent activities</strong>
+                            <span>
+                                New department activities will appear here when connected.
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </article>
 
     </section>
 
+    <!-- NOTICES + EVENTS -->
+    <section class="dashboard-grid dashboard-grid-bottom">
 
-    <!-- RECENT ACTIVITIES -->
-    <section class="dashboard-section">
-
-        <div class="section-header">
-            <h2>Recent Activities</h2>
-        </div>
-
-        <div class="activity-list">
-
-            <div class="activity">
-                <strong>New student added</strong>
-                <span>Student Management</span>
+        <!-- LATEST NOTICES -->
+        <article class="dashboard-section compact-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">DEPARTMENT UPDATES</p>
+                    <h2>Latest Notices</h2>
+                </div>
             </div>
 
-            <div class="activity">
-                <strong>New notice published</strong>
-                <span>Notice Management</span>
+            {% if notices is defined and notices %}
+                <div class="simple-list">
+                    {% for notice in notices[:3] %}
+                    <div class="simple-list-row">
+                        <span class="list-icon notice-icon">N</span>
+                        <div>
+                            <strong>
+                                {{ notice.title if notice.title is defined else notice.name }}
+                            </strong>
+                            <small>
+                                {{ notice.date if notice.date is defined else notice.created_at if notice.created_at is defined else '' }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-copy">
+                    Published department notices will appear here.
+                </p>
+            {% endif %}
+        </article>
+
+        <!-- UPCOMING EVENTS -->
+        <article class="dashboard-section compact-panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">ON THE CALENDAR</p>
+                    <h2>Upcoming Events</h2>
+                </div>
             </div>
 
-            <div class="activity">
-                <strong>Faculty workload updated</strong>
-                <span>Faculty Management</span>
-            </div>
-
-            <div class="activity">
-                <strong>Timetable updated</strong>
-                <span>Timetable Management</span>
-            </div>
-
-        </div>
+            {% if events is defined and events %}
+                <div class="simple-list">
+                    {% for event in events[:3] %}
+                    <div class="simple-list-row">
+                        <span class="list-icon event-icon">E</span>
+                        <div>
+                            <strong>
+                                {{ event.title if event.title is defined else event.name }}
+                            </strong>
+                            <small>
+                                {{ event.date if event.date is defined else event.event_date if event.event_date is defined else '' }}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-copy">
+                    Upcoming department events will appear here.
+                </p>
+            {% endif %}
+        </article>
 
     </section>
 
 </main>
-{%endblock%}
+{% endblock %}
