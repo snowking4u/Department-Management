@@ -1,7 +1,9 @@
 {% extends "hodBase.html" %}
 {% block title %}Faculty Management & Profile View | GPH{% endblock %}
 
-{% block stylesheets %}{{ url_for('static', filename='css/faculty.css') }}{% endblock %}
+{% block stylesheets %}
+{{ url_for('static', filename='css/faculty.css') }}
+{% endblock %}
 
 {% block content %}
 <main class="main-wrapper">
@@ -396,18 +398,7 @@
 
 {% block scripts %}
 <script>
-    // Embedded Database Faculty Users from Flask
-    const dbFacultyUsers = [
-        {% for u in faculty_users %}
-        {
-            id: {{ u.id }},
-            name: {{ u.name|tojson }},
-            email: {{ u.email|tojson }},
-            department: {{ (u.department or 'Computer Engineering')|tojson }},
-            role: {{ u.role|tojson }}
-        }{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+
 
     // Current logged-in user info
     const currentUser = {

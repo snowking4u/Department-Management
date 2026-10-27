@@ -2,7 +2,7 @@
 {% block title %}Student Management | GPH{% endblock %}
 
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/student_management.css') }}">
+{{ url_for('static', filename='css/student_management.css') }}
 {% endblock %}
 
 {% block content %}
@@ -75,9 +75,7 @@
 
     <!-- Filters -->
     <section class="filter-panel">
-        <input type="text"
-               id="studentSearch"
-               placeholder="Search by name or roll number...">
+        <input type="text" id="studentSearch" placeholder="Search by name or roll number...">
 
         <select id="batchFilter">
             <option value="">All Batches</option>
@@ -119,64 +117,64 @@
                         </tr>
                     </thead>
                     <tbody id="studentTableBody">
-                        <tr data-name="Aarav Sharma" data-roll="CE001"
-                            data-year="1" data-batch="2024-2027"
+                        <tr data-name="Aarav Sharma" data-roll="CE001" data-year="1" data-batch="2024-2027"
                             data-status="Active" data-backlogs="0">
                             <td><img src="https://ui-avatars.com/api/?name=Aarav+Sharma&background=DBEAFE&color=1D4ED8"
-                                alt="Aarav Sharma" class="student-photo"></td>
+                                    alt="Aarav Sharma" class="student-photo"></td>
                             <td><strong>Aarav Sharma</strong></td>
                             <td>CE001</td>
                             <td>Computer Engineering</td>
                             <td>1st Semester</td>
-                            <td><button class="profile-btn" onclick="viewProfile('Aarav Sharma')">View Profile</button></td>
+                            <td><button class="profile-btn" onclick="viewProfile('Aarav Sharma')">View Profile</button>
+                            </td>
                         </tr>
 
-                        <tr data-name="Ananya Verma" data-roll="CE002"
-                            data-year="1" data-batch="2024-2027"
+                        <tr data-name="Ananya Verma" data-roll="CE002" data-year="1" data-batch="2024-2027"
                             data-status="Active" data-backlogs="0">
                             <td><img src="https://ui-avatars.com/api/?name=Ananya+Verma&background=FCE7F3&color=9D174D"
-                                alt="Ananya Verma" class="student-photo"></td>
+                                    alt="Ananya Verma" class="student-photo"></td>
                             <td><strong>Ananya Verma</strong></td>
                             <td>CE002</td>
                             <td>Computer Engineering</td>
                             <td>1st Semester</td>
-                            <td><button class="profile-btn" onclick="viewProfile('Ananya Verma')">View Profile</button></td>
+                            <td><button class="profile-btn" onclick="viewProfile('Ananya Verma')">View Profile</button>
+                            </td>
                         </tr>
 
-                        <tr data-name="Rohan Singh" data-roll="CE003"
-                            data-year="1" data-batch="2024-2027"
+                        <tr data-name="Rohan Singh" data-roll="CE003" data-year="1" data-batch="2024-2027"
                             data-status="Active" data-backlogs="1">
                             <td><img src="https://ui-avatars.com/api/?name=Rohan+Singh&background=FFEDD5&color=9A3412"
-                                alt="Rohan Singh" class="student-photo"></td>
+                                    alt="Rohan Singh" class="student-photo"></td>
                             <td><strong>Rohan Singh</strong></td>
                             <td>CE003</td>
                             <td>Computer Engineering</td>
                             <td>1st Semester</td>
-                            <td><button class="profile-btn" onclick="viewProfile('Rohan Singh')">View Profile</button></td>
+                            <td><button class="profile-btn" onclick="viewProfile('Rohan Singh')">View Profile</button>
+                            </td>
                         </tr>
 
-                        <tr data-name="Priya Gupta" data-roll="CE004"
-                            data-year="1" data-batch="2024-2027"
+                        <tr data-name="Priya Gupta" data-roll="CE004" data-year="1" data-batch="2024-2027"
                             data-status="Active" data-backlogs="0">
                             <td><img src="https://ui-avatars.com/api/?name=Priya+Gupta&background=D1FAE5&color=065F46"
-                                alt="Priya Gupta" class="student-photo"></td>
+                                    alt="Priya Gupta" class="student-photo"></td>
                             <td><strong>Priya Gupta</strong></td>
                             <td>CE004</td>
                             <td>Computer Engineering</td>
                             <td>1st Semester</td>
-                            <td><button class="profile-btn" onclick="viewProfile('Priya Gupta')">View Profile</button></td>
+                            <td><button class="profile-btn" onclick="viewProfile('Priya Gupta')">View Profile</button>
+                            </td>
                         </tr>
 
-                        <tr data-name="Aditya Kumar" data-roll="CE005"
-                            data-year="1" data-batch="2024-2027"
+                        <tr data-name="Aditya Kumar" data-roll="CE005" data-year="1" data-batch="2024-2027"
                             data-status="Active" data-backlogs="1">
                             <td><img src="https://ui-avatars.com/api/?name=Aditya+Kumar&background=EDE9FE&color=5B21B6"
-                                alt="Aditya Kumar" class="student-photo"></td>
+                                    alt="Aditya Kumar" class="student-photo"></td>
                             <td><strong>Aditya Kumar</strong></td>
                             <td>CE005</td>
                             <td>Computer Engineering</td>
                             <td>1st Semester</td>
-                            <td><button class="profile-btn" onclick="viewProfile('Aditya Kumar')">View Profile</button></td>
+                            <td><button class="profile-btn" onclick="viewProfile('Aditya Kumar')">View Profile</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -205,9 +203,15 @@
             <div class="chart-card">
                 <h3>Academic Performance</h3>
                 <div class="performance-bars">
-                    <div><span>Excellent</span><div class="bar"><span style="width:80%"></span></div></div>
-                    <div><span>Good</span><div class="bar"><span style="width:65%"></span></div></div>
-                    <div><span>Average</span><div class="bar"><span style="width:40%"></span></div></div>
+                    <div><span>Excellent</span>
+                        <div class="bar"><span style="width:80%"></span></div>
+                    </div>
+                    <div><span>Good</span>
+                        <div class="bar"><span style="width:65%"></span></div>
+                    </div>
+                    <div><span>Average</span>
+                        <div class="bar"><span style="width:40%"></span></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -222,10 +226,8 @@
 
         <!-- Student Header -->
         <div class="profile-header">
-            <img id="profilePhoto"
-                 src="https://ui-avatars.com/api/?name=Student&background=DBEAFE&color=1D4ED8"
-                 alt="Student Photo"
-                 class="student-photo">
+            <img id="profilePhoto" src="https://ui-avatars.com/api/?name=Student&background=DBEAFE&color=1D4ED8"
+                alt="Student Photo" class="student-photo">
 
             <div>
                 <h2 id="profileName">Student Name</h2>
