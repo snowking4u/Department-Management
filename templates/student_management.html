@@ -1,11 +1,14 @@
-{%extends "hodBase.html"%}
-{%block title%}Student Management | GPH{%endblock%}
-<link rel="stylesheet"
-    href="{% block stylesheets %}{{ url_for('static', filename='css/student_management.css') }}{%endblock%}">
-{%block content%}
+{% extends "hodBase.html" %}
+{% block title %}Student Management | GPH{% endblock %}
 
-<main class="main">
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student_management.css') }}">
+{% endblock %}
 
+{% block content %}
+<main class="main-content">
+
+    <!-- Topbar -->
     <header class="topbar">
         <span>COMPUTER ENGINEERING DEPARTMENT</span>
         <div class="profile">
@@ -14,458 +17,542 @@
         </div>
     </header>
 
+    <!-- Page Heading -->
     <section class="page-heading">
         <div>
-            <p class="eyebrow">STUDENT RECORDS & ACADEMICS</p>
             <h1>Student Management</h1>
-            <p class="subtitle">
-                Manage student profiles, academics, attendance and finances.
-            </p>
+            <p>Manage Computer Engineering students, academic records and performance.</p>
         </div>
-        <div class="course-badge">
-            <span class="course-icon">✦</span>
-            <div><strong>3-Year Diploma</strong>
-                <p>6 Semesters · Lateral Entry</p>
-            </div>
+
+        <div class="department-badge">
+            <span>Computer Engineering Department</span>
+            <strong>Academic Dashboard</strong>
         </div>
     </section>
 
-    <section class="stats">
-        <article class="stat-card">
-            <span class="stat-icon blue">♟</span>
+    <!-- Statistics -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">♟</div>
             <div>
                 <p>Total Students</p>
-                <h2>512</h2><small>All recorded batches</small>
+                <h2 id="totalStudents">32</h2>
             </div>
-        </article>
-        <article class="stat-card">
-            <span class="stat-icon green">✓</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">✓</div>
             <div>
-                <p>Currently Enrolled</p>
-                <h2>426</h2><small>Active students</small>
+                <p>Active Students</p>
+                <h2>27</h2>
             </div>
-        </article>
-        <article class="stat-card">
-            <span class="stat-icon purple">✦</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">▲</div>
             <div>
-                <p>Pass-out Students</p>
-                <h2>86</h2><small>Archived records</small>
+                <p>Attendance Below 75%</p>
+                <h2>5</h2>
             </div>
-        </article>
-        <article class="stat-card">
-            <span class="stat-icon orange">!</span>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon red">!</div>
             <div>
-                <p>Pending Dues</p>
-                <h2>37</h2><small>Require review</small>
+                <p>Academic Concerns</p>
+                <h2>4</h2>
             </div>
-        </article>
+        </div>
     </section>
 
-    <section class="workspace">
+    <!-- Year Tabs -->
+    <section class="year-tabs">
+        <button class="year-tab active" data-year="1">1st Year</button>
+        <button class="year-tab" data-year="2">2nd Year</button>
+        <button class="year-tab" data-year="3">3rd Year</button>
+        <button class="year-tab" data-year="passed">Passed Out</button>
+    </section>
 
-        <div class="records-panel">
+    <!-- Filters -->
+    <section class="filter-panel">
+        <input type="text"
+               id="studentSearch"
+               placeholder="Search by name or roll number...">
 
-            <div class="tabs">
-                <button class="tab active" data-status="All">All Students</button>
-                <button class="tab" data-status="Active">Enrolled</button>
-                <button class="tab" data-status="Pass-out">Pass-out</button>
-                <button class="tab" data-status="Inactive">Inactive</button>
+        <select id="batchFilter">
+            <option value="">All Batches</option>
+            <option value="2024-2027">2024 - 2027</option>
+            <option value="2025-2028">2025 - 2028</option>
+        </select>
+
+        <select id="statusFilter">
+            <option value="">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Passed Out">Passed Out</option>
+        </select>
+
+        <select id="backlogFilter">
+            <option value="">All Backlogs</option>
+            <option value="0">No Backlogs</option>
+            <option value="1">Has Backlogs</option>
+        </select>
+    </section>
+
+    <!-- Student Table & Charts Grid -->
+    <section class="content-grid">
+        <div class="student-panel">
+            <div class="panel-heading">
+                <h3>Student Records</h3>
+                <span id="studentCount">5 students</span>
             </div>
 
-            <div class="filters">
-                <div class="filter-field search-field">
-                    <label>Search Student</label>
-                    <input id="search" placeholder="Name, roll no. or enrollment no.">
-                </div>
-
-                <div class="filter-field">
-                    <label>Admission Batch</label>
-                    <select id="batch">
-                        <option value="All">All Batches</option>
-                        <option>2022-2025</option>
-                        <option>2023-2026</option>
-                        <option>2024-2027</option>
-                        <option>2025-2028</option>
-                        <option>2026-2029</option>
-                    </select>
-                </div>
-
-                <div class="filter-field">
-                    <label>Year</label>
-                    <select id="year">
-                        <option value="All">All Years</option>
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="P">Pass-out</option>
-                    </select>
-                </div>
-
-                <div class="filter-field">
-                    <label>Semester</label>
-                    <select id="semester">
-                        <option value="All">All Semesters</option>
-                        <option value="1">1st Semester</option>
-                        <option value="2">2nd Semester</option>
-                        <option value="3">3rd Semester</option>
-                        <option value="4">4th Semester</option>
-                        <option value="5">5th Semester</option>
-                        <option value="6">6th Semester</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="records-heading">
-                <div>
-                    <h2>Student Directory</h2>
-                    <p>Computer Engineering · <span id="count">8</span> sample records</p>
-                </div>
-                <button class="primary-btn" id="openForm">＋ Add Student</button>
-            </div>
-            <div class="table-wrap">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Roll No.</th>
-                            <th>Enrollment No.</th>
+                            <th>Photo</th>
                             <th>Student Name</th>
-                            <th>Admission Batch</th>
-                            <th>Year / Semester</th>
-                            <th>CGPA</th>
-                            <th>Attendance</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Roll No</th>
+                            <th>Branch</th>
+                            <th>Semester</th>
+                            <th>View Profile</th>
                         </tr>
                     </thead>
+                    <tbody id="studentTableBody">
+                        <tr data-name="Aarav Sharma" data-roll="CE001"
+                            data-year="1" data-batch="2024-2027"
+                            data-status="Active" data-backlogs="0">
+                            <td><img src="https://ui-avatars.com/api/?name=Aarav+Sharma&background=DBEAFE&color=1D4ED8"
+                                alt="Aarav Sharma" class="student-photo"></td>
+                            <td><strong>Aarav Sharma</strong></td>
+                            <td>CE001</td>
+                            <td>Computer Engineering</td>
+                            <td>1st Semester</td>
+                            <td><button class="profile-btn" onclick="viewProfile('Aarav Sharma')">View Profile</button></td>
+                        </tr>
 
-                    <tbody id="studentRows">
-                        <tr id="emptyState">
-                            <td colspan="9" class="empty-state">
-                                <div class="empty-state-content">
-                                    <h3>No student records yet</h3>
-                                    <p>Add your first student to start managing records.</p>
-                                    <button type="button" class="primary-btn" id="emptyAdd">
-                                        + Add First Student
-                                    </button>
-                                </div>
-                            </td>
+                        <tr data-name="Ananya Verma" data-roll="CE002"
+                            data-year="1" data-batch="2024-2027"
+                            data-status="Active" data-backlogs="0">
+                            <td><img src="https://ui-avatars.com/api/?name=Ananya+Verma&background=FCE7F3&color=9D174D"
+                                alt="Ananya Verma" class="student-photo"></td>
+                            <td><strong>Ananya Verma</strong></td>
+                            <td>CE002</td>
+                            <td>Computer Engineering</td>
+                            <td>1st Semester</td>
+                            <td><button class="profile-btn" onclick="viewProfile('Ananya Verma')">View Profile</button></td>
+                        </tr>
+
+                        <tr data-name="Rohan Singh" data-roll="CE003"
+                            data-year="1" data-batch="2024-2027"
+                            data-status="Active" data-backlogs="1">
+                            <td><img src="https://ui-avatars.com/api/?name=Rohan+Singh&background=FFEDD5&color=9A3412"
+                                alt="Rohan Singh" class="student-photo"></td>
+                            <td><strong>Rohan Singh</strong></td>
+                            <td>CE003</td>
+                            <td>Computer Engineering</td>
+                            <td>1st Semester</td>
+                            <td><button class="profile-btn" onclick="viewProfile('Rohan Singh')">View Profile</button></td>
+                        </tr>
+
+                        <tr data-name="Priya Gupta" data-roll="CE004"
+                            data-year="1" data-batch="2024-2027"
+                            data-status="Active" data-backlogs="0">
+                            <td><img src="https://ui-avatars.com/api/?name=Priya+Gupta&background=D1FAE5&color=065F46"
+                                alt="Priya Gupta" class="student-photo"></td>
+                            <td><strong>Priya Gupta</strong></td>
+                            <td>CE004</td>
+                            <td>Computer Engineering</td>
+                            <td>1st Semester</td>
+                            <td><button class="profile-btn" onclick="viewProfile('Priya Gupta')">View Profile</button></td>
+                        </tr>
+
+                        <tr data-name="Aditya Kumar" data-roll="CE005"
+                            data-year="1" data-batch="2024-2027"
+                            data-status="Active" data-backlogs="1">
+                            <td><img src="https://ui-avatars.com/api/?name=Aditya+Kumar&background=EDE9FE&color=5B21B6"
+                                alt="Aditya Kumar" class="student-photo"></td>
+                            <td><strong>Aditya Kumar</strong></td>
+                            <td>CE005</td>
+                            <td>Computer Engineering</td>
+                            <td>1st Semester</td>
+                            <td><button class="profile-btn" onclick="viewProfile('Aditya Kumar')">View Profile</button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <p class="table-note">
-                Student records added on this page are temporary until the backend is connected.
-            </p>
-            <aside class="right-panel">
-                <section class="side-card">
-                    <h3>Quick Actions</h3>
-                    <button class="action-btn" id="quickAdd">＋ &nbsp; Add New Student</button>
-                    <button class="action-btn" id="batchInfo">▦ &nbsp; Manage Batches</button>
-                    <button class="action-btn" id="feeInfo">₹ &nbsp; Fee Collection</button>
-                    <button class="action-btn" id="fineInfo">! &nbsp; Fine Records</button>
-                </section>
-
-                <section class="side-card">
-                    <h3>Batch Overview</h3>
-                    <div class="batch-row">
-                        <span>1st Year · Sem 1–2</span>
-                        <strong>—</strong>
+        <!-- Charts -->
+        <div class="charts-panel">
+            <div class="chart-card">
+                <h3>Year-wise Distribution</h3>
+                <div class="donut-chart">
+                    <div class="donut-center">
+                        <strong>32</strong>
+                        <span>Total</span>
                     </div>
+                </div>
 
-                    <div class="batch-row">
-                        <span>2nd Year · Sem 3–4</span>
-                        <strong>—</strong>
-                    </div>
+                <div class="chart-legend">
+                    <p><span class="dot blue-dot"></span> 1st Year</p>
+                    <p><span class="dot purple-dot"></span> 2nd Year</p>
+                    <p><span class="dot orange-dot"></span> 3rd Year</p>
+                    <p><span class="dot green-dot"></span> Passed Out</p>
+                </div>
+            </div>
 
-                    <div class="batch-row">
-                        <span>3rd Year · Sem 5–6</span>
-                        <strong>—</strong>
-                    </div>
-                    <p class="hint">Lateral-entry students can be assigned their actual semester and admission batch
-                        separately.</p>
-                </section>
-
-                <section class="side-card">
-                    <h3>Academic & Finance Snapshot</h3>
-                    <div class="snapshot"><span>Average CGPA</span><strong>—</strong></div>
-                    <div class="snapshot"><span>Average Attendance</span><strong>—</strong></div>
-                    <div class="snapshot"><span>Fees Pending</span><strong>—</strong></div>
-                    <div class="snapshot"><span>Fines Pending</span><strong>—</strong></div>
-                    <p class="hint">Live totals will be calculated from student records later.</p>
-                </section>
-            </aside>
+            <div class="chart-card">
+                <h3>Academic Performance</h3>
+                <div class="performance-bars">
+                    <div><span>Excellent</span><div class="bar"><span style="width:80%"></span></div></div>
+                    <div><span>Good</span><div class="bar"><span style="width:65%"></span></div></div>
+                    <div><span>Average</span><div class="bar"><span style="width:40%"></span></div></div>
+                </div>
+            </div>
+        </div>
     </section>
 
 </main>
-</div>
 
-<!-- Add Student Modal -->
-<div class="modal-overlay" id="studentModal">
-    <div class="modal">
-        <div class="modal-heading">
-            <div>
-                <h2>Add Student</h2>
-                <p>Enter the student's basic academic details.</p>
-            </div>
-            <button id="closeForm" class="close-btn">×</button>
-        </div>
-
-        <form id="addStudentForm">
-            <div class="form-grid">
-                <div><label>Roll Number *</label><input id="rollNo" required></div>
-                <div><label>Enrollment Number *</label><input id="enrollmentNo" required></div>
-                <div><label>Full Name *</label><input id="studentName" required></div>
-                <div><label>Admission Batch *</label>
-                    <select id="studentBatch" required>
-                        <option value="">Select batch</option>
-                        <option>2024-2027</option>
-                        <option>2025-2028</option>
-                        <option>2026-2029</option>
-                        <option>2027-2030</option>
-                    </select>
-                </div>
-                <div><label>Current Semester *</label>
-                    <select id="studentSemester" required>
-                        <option value="">Select semester</option>
-                        <option value="1">1st Semester</option>
-                        <option value="2">2nd Semester</option>
-                        <option value="3">3rd Semester</option>
-                        <option value="4">4th Semester</option>
-                        <option value="5">5th Semester</option>
-                        <option value="6">6th Semester</option>
-                    </select>
-                </div>
-                <div><label>Admission Type</label>
-                    <select id="admissionType">
-                        <option>Regular</option>
-                        <option>Lateral Entry</option>
-                    </select>
-                </div>
-            </div>
-            <p class="form-note">This demo adds the record to the current page only. It is not saved to a database.</p>
-            <div class="modal-actions">
-                <button type="button" class="secondary-btn" id="cancelForm">Cancel</button>
-                <button type="submit" class="primary-btn">Add Student</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- View Student Profile Modal -->
+<!-- Student Profile Modal -->
 <div class="modal-overlay" id="profileModal">
-    <div class="modal">
-        <div class="modal-heading">
+    <div class="profile-modal">
+        <button class="close-modal" onclick="closeProfile()">×</button>
+
+        <!-- Student Header -->
+        <div class="profile-header">
+            <img id="profilePhoto"
+                 src="https://ui-avatars.com/api/?name=Student&background=DBEAFE&color=1D4ED8"
+                 alt="Student Photo"
+                 class="student-photo">
+
             <div>
-                <h2 id="profileName">Student Profile</h2>
-                <p>Student academic and personal record</p>
+                <h2 id="profileName">Student Name</h2>
+                <p id="profileRoll">Roll Number</p>
+                <p id="profileBranch">Computer Engineering</p>
             </div>
-            <button type="button" id="closeProfile" class="close-btn">×</button>
         </div>
 
-        <div class="form-grid">
+        <!-- Academic Summary -->
+        <h3>Academic Overview</h3>
+        <div class="profile-stats">
             <div>
-                <label>Roll Number</label>
-                <p id="profileRoll">—</p>
+                <span>Overall CGPA</span>
+                <strong id="profileCGPA">--</strong>
             </div>
+
             <div>
-                <label>Enrollment Number</label>
-                <p id="profileEnrollment">—</p>
+                <span>Attendance</span>
+                <strong id="profileAttendance">--</strong>
             </div>
+
             <div>
-                <label>Admission Batch</label>
-                <p id="profileBatch">—</p>
+                <span>Backlogs</span>
+                <strong id="profileBacklogs">0</strong>
             </div>
-            <div>
-                <label>Year / Semester</label>
-                <p id="profileSemester">—</p>
+        </div>
+
+        <!-- Academic Details -->
+        <div class="profile-details">
+            <h3>Academic Information</h3>
+            <p><strong>Department:</strong>
+                <span id="profileDepartment">Computer Engineering</span>
+            </p>
+            <p><strong>Admission Batch:</strong>
+                <span id="profileBatch">--</span>
+            </p>
+            <p><strong>Current Semester:</strong>
+                <span id="profileSemester">--</span>
+            </p>
+            <p><strong>Scholarship:</strong>
+                <span id="profileScholarship">Not specified</span>
+            </p>
+            <p><strong>Achievements:</strong>
+                <span id="profileAchievements">Not specified</span>
+            </p>
+        </div>
+
+        <!-- Semester-wise Results -->
+        <div class="profile-details">
+            <h3>Semester-wise Performance</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Semester</th>
+                            <th>SGPA</th>
+                            <th>CGPA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="semesterResults">
+                        <tr>
+                            <td colspan="3">No semester results added</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div>
-                <label>CGPA</label>
-                <p id="profileCGPA">—</p>
-            </div>
-            <div>
-                <label>Attendance</label>
-                <p id="profileAttendance">—</p>
-            </div>
-            <div>
-                <label>Status</label>
-                <p id="profileStatus">—</p>
-            </div>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="profile-details">
+            <h3>Personal Information</h3>
+            <p><strong>Father's Name:</strong>
+                <span id="profileFather">Not specified</span>
+            </p>
+            <p><strong>Mother's Name:</strong>
+                <span id="profileMother">Not specified</span>
+            </p>
+            <p><strong>Mobile Number:</strong>
+                <span id="profilePhone">Not specified</span>
+            </p>
+            <p><strong>Email Address:</strong>
+                <span id="profileEmail">Not specified</span>
+            </p>
+            <p><strong>Address:</strong>
+                <span id="profileAddress">Not specified</span>
+            </p>
+            <p><strong>Blood Group:</strong>
+                <span id="profileBloodGroup">Not specified</span>
+            </p>
+            <p><strong>Category:</strong>
+                <span id="profileCategory">Not specified</span>
+            </p>
+            <p><strong>DigiLocker ID:</strong>
+                <span id="profileDigiLocker">Not specified</span>
+            </p>
+        </div>
+
+        <!-- Edit Button -->
+        <button class="profile-btn" onclick="editStudent()">
+            Edit Details
+        </button>
+
+        <div id="editMessage" class="edit-message" hidden>
+            Edit mode will be connected to the student edit form.
+            Database saving will be added with the backend.
         </div>
     </div>
 </div>
-{%endblock%}
+{% endblock %}
+
 {% block scripts %}
 <script>
-    const modal = document.getElementById("studentModal");
-    const form = document.getElementById("addStudentForm");
-    const rows = document.getElementById("studentRows");
-    const search = document.getElementById("search");
-    let activeStatus = "All";
-
-    function openModal() {
-        modal.classList.add("show");
-    }
-    function closeModal() {
-        modal.classList.remove("show");
-    }
-
-    document.getElementById("openForm").addEventListener("click", openModal);
-    document.getElementById("quickAdd").addEventListener("click", openModal);
-    document.getElementById("emptyAdd").addEventListener("click", openModal);
-    document.getElementById("closeForm").addEventListener("click", closeModal);
-    document.getElementById("cancelForm").addEventListener("click", closeModal);
+    let selectedYear = "1";
 
     function filterStudents() {
-        const query = search.value.toLowerCase().trim();
-        const batch = document.getElementById("batch").value;
-        const year = document.getElementById("year").value;
-        const semester = document.getElementById("semester").value;
-        let count = 0;
+        const search = document.getElementById("studentSearch").value.toLowerCase();
+        const batch = document.getElementById("batchFilter").value;
+        const status = document.getElementById("statusFilter").value;
+        const backlog = document.getElementById("backlogFilter").value;
 
-        rows.querySelectorAll("tr").forEach(row => {
-            const matchesText = row.innerText.toLowerCase().includes(query);
-            const matchesBatch = batch === "All" || row.dataset.batch === batch;
-            const matchesYear = year === "All" || row.dataset.year === year;
-            const matchesSemester = semester === "All" || row.dataset.semester === semester;
-            const matchesStatus = activeStatus === "All" || row.dataset.status === activeStatus;
+        const rows = document.querySelectorAll("#studentTableBody tr");
+        let visibleCount = 0;
 
-            const visible = matchesText && matchesBatch && matchesYear && matchesSemester && matchesStatus;
+        rows.forEach(row => {
+            const name = row.dataset.name.toLowerCase();
+            const roll = row.dataset.roll.toLowerCase();
+
+            const matchesSearch = name.includes(search) || roll.includes(search);
+            const matchesYear = selectedYear === "passed"
+                ? row.dataset.status === "Passed Out"
+                : row.dataset.year === selectedYear;
+
+            const matchesBatch = !batch || row.dataset.batch === batch;
+            const matchesStatus = !status || row.dataset.status === status;
+            const matchesBacklog = backlog === ""
+                || (backlog === "0" && row.dataset.backlogs === "0")
+                || (backlog === "1" && row.dataset.backlogs !== "0");
+
+            const visible = matchesSearch && matchesYear &&
+                matchesBatch && matchesStatus && matchesBacklog;
+
             row.style.display = visible ? "" : "none";
-            if (visible) count++;
+
+            if (visible) visibleCount++;
         });
 
-        document.getElementById("count").textContent = count;
+        document.getElementById("studentCount").textContent =
+            visibleCount + (visibleCount === 1 ? " student" : " students");
     }
 
-    search.addEventListener("input", filterStudents);
-    ["batch", "year", "semester"].forEach(id => {
-        document.getElementById(id).addEventListener("change", filterStudents);
-    });
+    document.getElementById("studentSearch").addEventListener("input", filterStudents);
+    document.getElementById("batchFilter").addEventListener("change", filterStudents);
+    document.getElementById("statusFilter").addEventListener("change", filterStudents);
+    document.getElementById("backlogFilter").addEventListener("change", filterStudents);
 
-    document.querySelectorAll(".tab").forEach(tab => {
-        tab.addEventListener("click", () => {
-            document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
-            tab.classList.add("active");
-            activeStatus = tab.dataset.status;
+    document.querySelectorAll(".year-tab").forEach(button => {
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".year-tab").forEach(tab => tab.classList.remove("active"));
+            button.classList.add("active");
+
+            selectedYear = button.dataset.year;
             filterStudents();
         });
     });
 
-    form.addEventListener("submit", function (event) {
-        event.preventDefault();
+    const studentProfiles = {
+        "Aarav Sharma": {
+            cgpa: "8.42",
+            attendance: "86%",
+            backlogs: 0,
+            semester: "1st Semester",
+            scholarship: "Merit Scholarship",
+            achievements: "Technical Quiz Participation",
+            father: "Rajesh Sharma",
+            mother: "Sunita Sharma",
+            phone: "Not specified",
+            email: "Not specified",
+            address: "Not specified",
+            bloodGroup: "Not specified",
+            category: "Not specified",
+            digiLocker: "Not specified",
+            results: [
+                { semester: "1st", sgpa: "8.42", cgpa: "8.42" }
+            ]
+        },
 
-        const roll = document.getElementById("rollNo").value.trim();
-        const enrollment = document.getElementById("enrollmentNo").value.trim();
-        const name = document.getElementById("studentName").value.trim();
-        const batch = document.getElementById("studentBatch").value;
-        const semester = document.getElementById("studentSemester").value;
-        const admissionType = document.getElementById("admissionType").value;
+        "Ananya Verma": {
+            cgpa: "9.10",
+            attendance: "92%",
+            backlogs: 0,
+            semester: "1st Semester",
+            scholarship: "Merit Scholarship",
+            achievements: "Academic Excellence",
+            father: "Amit Verma",
+            mother: "Neha Verma",
+            phone: "Not specified",
+            email: "Not specified",
+            address: "Not specified",
+            bloodGroup: "Not specified",
+            category: "Not specified",
+            digiLocker: "Not specified",
+            results: [
+                { semester: "1st", sgpa: "9.10", cgpa: "9.10" }
+            ]
+        },
 
-        if ([...rows.querySelectorAll("tr")].some(row =>
-            row.cells[0].textContent.trim() === roll ||
-            row.cells[1].textContent.trim() === enrollment
-        )) {
-            alert("This roll number or enrollment number already exists in the sample list.");
+        "Rohan Singh": {
+            cgpa: "6.80",
+            attendance: "72%",
+            backlogs: 1,
+            semester: "1st Semester",
+            scholarship: "Not specified",
+            achievements: "Not specified",
+            father: "Vikram Singh",
+            mother: "Kavita Singh",
+            phone: "Not specified",
+            email: "Not specified",
+            address: "Not specified",
+            bloodGroup: "Not specified",
+            category: "Not specified",
+            digiLocker: "Not specified",
+            results: [
+                { semester: "1st", sgpa: "6.80", cgpa: "6.80" }
+            ]
+        },
+
+        "Priya Gupta": {
+            cgpa: "8.75",
+            attendance: "89%",
+            backlogs: 0,
+            semester: "1st Semester",
+            scholarship: "Merit Scholarship",
+            achievements: "Technical Activities",
+            father: "Sanjay Gupta",
+            mother: "Pooja Gupta",
+            phone: "Not specified",
+            email: "Not specified",
+            address: "Not specified",
+            bloodGroup: "Not specified",
+            category: "Not specified",
+            digiLocker: "Not specified",
+            results: [
+                { semester: "1st", sgpa: "8.75", cgpa: "8.75" }
+            ]
+        },
+
+        "Aditya Kumar": {
+            cgpa: "7.20",
+            attendance: "68%",
+            backlogs: 1,
+            semester: "1st Semester",
+            scholarship: "Not specified",
+            achievements: "Not specified",
+            father: "Manoj Kumar",
+            mother: "Rekha Kumar",
+            phone: "Not specified",
+            email: "Not specified",
+            address: "Not specified",
+            bloodGroup: "Not specified",
+            category: "Not specified",
+            digiLocker: "Not specified",
+            results: [
+                { semester: "1st", sgpa: "7.20", cgpa: "7.20" }
+            ]
+        }
+    };
+
+    function viewProfile(name) {
+        const row = [...document.querySelectorAll("#studentTableBody tr")]
+            .find(row => row.dataset.name === name);
+
+        const student = studentProfiles[name];
+
+        if (!row || !student) {
+            alert("Student profile not found.");
             return;
         }
 
-        const year = Math.ceil(Number(semester) / 2);
-        const yearLabel = year === 1 ? "1st" : year === 2 ? "2nd" : "3rd";
-        const semLabel = ["", "1st", "2nd", "3rd", "4th", "5th", "6th"][Number(semester)];
-        const row = document.createElement("tr");
+        document.getElementById("profileName").textContent = name;
+        document.getElementById("profileRoll").textContent =
+            "Roll Number: " + row.dataset.roll;
 
-        row.dataset.status = "Active";
-        row.dataset.batch = batch;
-        row.dataset.year = String(year);
-        row.dataset.semester = semester;
+        document.getElementById("profileBranch").textContent =
+            "Computer Engineering";
 
-        [roll, enrollment, name, batch, `${yearLabel} / ${semLabel}`, "—", "—"].forEach(value => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            row.appendChild(cell);
-        });
+        document.getElementById("profilePhoto").src =
+            row.querySelector(".student-photo").src;
 
-        const statusCell = document.createElement("td");
-        statusCell.innerHTML = '<span class="status active-status">Active</span>';
-        row.appendChild(statusCell);
+        document.getElementById("profileCGPA").textContent = student.cgpa;
+        document.getElementById("profileAttendance").textContent = student.attendance;
+        document.getElementById("profileBacklogs").textContent = student.backlogs;
 
-        const actionCell = document.createElement("td");
-        actionCell.innerHTML = '<button class="icon-btn view" title="View">◉</button>';
-        row.appendChild(actionCell);
+        document.getElementById("profileBatch").textContent =
+            row.dataset.batch || "Not specified";
 
-        rows.prepend(row);
-        form.reset();
-        closeModal();
-        activeStatus = "All";
-        document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
-        document.querySelector('.tab[data-status="All"]').classList.add("active");
-        document.getElementById("batch").value = "All";
-        document.getElementById("year").value = "All";
-        document.getElementById("semester").value = "All";
-        search.value = "";
-        filterStudents();
-    });
+        document.getElementById("profileSemester").textContent = student.semester;
+        document.getElementById("profileScholarship").textContent = student.scholarship;
+        document.getElementById("profileAchievements").textContent = student.achievements;
 
-    document.getElementById("batchInfo").addEventListener("click", () => {
-        alert("Batch management UI can be connected in the next step.");
-    });
-    document.getElementById("feeInfo").addEventListener("click", () => {
-        alert("Fee collection records will be connected in the next step.");
-    });
-    document.getElementById("fineInfo").addEventListener("click", () => {
-        alert("Fine records will be connected in the next step.");
-    });
-    document.querySelectorAll(".view").forEach(button => {
-        button.addEventListener("click", () => alert("Student profile page will be built next."));
-    });
-    document.querySelectorAll(".edit").forEach(button => {
-        button.addEventListener("click", () => alert("Student edit form will be built next."));
-    });
+        document.getElementById("profileFather").textContent = student.father;
+        document.getElementById("profileMother").textContent = student.mother;
+        document.getElementById("profilePhone").textContent = student.phone;
+        document.getElementById("profileEmail").textContent = student.email;
+        document.getElementById("profileAddress").textContent = student.address;
+        document.getElementById("profileBloodGroup").textContent = student.bloodGroup;
+        document.getElementById("profileCategory").textContent = student.category;
+        document.getElementById("profileDigiLocker").textContent = student.digiLocker;
 
-    const profileModal = document.getElementById("profileModal");
+        document.getElementById("semesterResults").innerHTML =
+            student.results.map(result => `
+                <tr>
+                    <td>${result.semester}</td>
+                    <td>${result.sgpa}</td>
+                    <td>${result.cgpa}</td>
+                </tr>
+            `).join("");
 
-    document.querySelectorAll(".icon-btn.view").forEach(function (button) {
-        button.addEventListener("click", function () {
-            const row = button.closest("tr");
-            const cells = row.querySelectorAll("td");
+        document.getElementById("profileModal").style.display = "flex";
+        document.getElementById("editMessage").hidden = true;
+    }
 
-            document.getElementById("profileRoll").textContent =
-                cells[0].textContent.trim();
+    function closeProfile() {
+        document.getElementById("profileModal").style.display = "none";
+    }
 
-            document.getElementById("profileEnrollment").textContent =
-                cells[1].textContent.trim();
-
-            document.getElementById("profileName").textContent =
-                cells[2].textContent.trim();
-
-            document.getElementById("profileBatch").textContent =
-                cells[3].textContent.trim();
-
-            document.getElementById("profileSemester").textContent =
-                cells[4].textContent.trim();
-
-            document.getElementById("profileCGPA").textContent =
-                cells[5].textContent.trim();
-
-            document.getElementById("profileAttendance").textContent =
-                cells[6].textContent.trim();
-
-            document.getElementById("profileStatus").textContent =
-                cells[7].textContent.trim();
-
-            profileModal.classList.add("show");
-        });
-    });
-    document.getElementById("closeProfile").addEventListener("click", function () {
-        profileModal.classList.remove("show");
-    });
-
-    profileModal.addEventListener("click", function (event) {
-        if (event.target === profileModal) {
-            profileModal.classList.remove("show");
-        }
-    });
+    function editStudent() {
+        document.getElementById("editMessage").hidden = false;
+    }
 </script>
 {% endblock %}
