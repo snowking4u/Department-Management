@@ -408,6 +408,8 @@
         department: "{{ current_user.department if current_user and current_user.department else 'Computer Engineering' }}"
     };
 
+    const dbFacultyUsers = {{ faculty_users_data | tojson }};
+
     // Rich Sample Faculty Staff Directory
     const sampleFacultyData = [
         {

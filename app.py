@@ -96,9 +96,19 @@ def faculty():
 
     faculty_users = User.query.filter(db.func.lower(User.role) == "faculty").all()
     current_user = User.query.get(session.get("user_id"))
+    faculty_users_data = [
+        {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "department": user.department,
+        }
+        for user in faculty_users
+    ]
     return render_template(
         "faculty.html",
         faculty_users=faculty_users,
+        faculty_users_data=faculty_users_data,
         current_user=current_user
     )
 
