@@ -13,16 +13,30 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "Oggy&Jack")
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), nullable=False)
-    roll_number = db.Column(db.String(50), unique=True, nullable=True)
-    semester = db.Column(db.String(20), nullable=True)
-    department = db.Column(db.String(100), nullable=True)
 
+    
+class student(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(30), unique=True, nullable=False)
+    mobile_number = db.Column(db.String(20), nullable=False) 
+    password_hash = db.Column(db.String(255), nullable=False)
+    roll_number = db.Column(db.String(20), unique=True, nullable=True) 
+    semester = db.Column(db.Integer, nullable=True)
+    department = db.Column(db.String(100), nullable=True)
+    sgpa = db.Column(db.Float, nullable=True)
+    cgpa = db.Column(db.Float, nullable=True)
+    scholarship = db.Column(db.String(50), nullable=True)  
+    father_name = db.Column(db.String(50), nullable=True)
+    mother_name = db.Column(db.String(50), nullable=True)
+    address = db.Column(db.String(500), nullable=True)
+    blood_group = db.Column(db.String(10), nullable=True)
+    category = db.Column(db.String(20), nullable=True)
+    abc_id = db.Column(db.String(50), nullable=True)
+    achievements = db.Column(db.String(500), nullable=True)
+    batch = db.Column(db.Integer, nullable=True)
+    backlogs = db.Column(db.Integer, nullable=True)
+    attendance_percentage = db.Column(db.Float, nullable=True)
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -32,25 +46,26 @@ def login():
         role = request.form.get("role", "").strip()
 
         # Find user in database
-        user = User.query.filter(db.func.lower(User.email) == email).first()
+      #  user = user.query.filter(db.func.lower(user.email) == email).first()
 
         # Verify password and selected role
-        if (
-            user
-            and check_password_hash(user.password_hash, password)
-            and user.role.lower() == role.lower()
-        ):
-            session["user_id"] = user.id
-            session["user_name"] = user.name
-            session["user_role"] = user.role
-            session["user_email"] = user.email
+        # if (
+        #     user
+        #     and check_password_hash(user.password_hash, password)
+        #     and user.role.lower() == role.lower()
+        # ):
+            
+        session["user_id"] = student.id
+        session["user_name"] = student.name
+            #session["user_role"] = user.role
+        session["user_email"] = student.email
 
-            if user.role.lower() == "hod":
-                return redirect(url_for("hod_dashboard"))
-            elif user.role.lower() == "faculty":
-                return redirect(url_for("faculty"))
-            else:
-                return redirect(url_for("student_management"))
+            # if user.role.lower() == "hod":
+            #     return redirect(url_for("hod_dashboard"))
+            # elif user.role.lower() == "faculty":
+            #     return redirect(url_for("faculty"))
+            # else:
+            #     return redirect(url_for("student_management"))
 
         return render_template(
             "login.html",
@@ -94,12 +109,12 @@ def faculty():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    faculty_users = User.query.filter(db.func.lower(User.role) == "faculty").all()
-    current_user = User.query.get(session.get("user_id"))
+    #faculty_users = User.query.filter(db.func.lower(user.role) == "faculty").all()
+    #current_user = User.query.get(session.get("user_id"))
     return render_template(
         "faculty.html",
-        faculty_users=faculty_users,
-        current_user=current_user
+       # faculty_users=faculty_users,
+        #current_user=current_user
     )
 
 
@@ -123,24 +138,24 @@ def register():
     roll_number = request.form.get("roll_number", "").strip()
     semester = request.form.get("semester", "").strip()
 
-    if role not in {"student", "faculty", "hod"}:
-        return render_template("registration.html", selected_role="student", error="Please select a valid account type."), 400
-    if not name or not email or not password or not department:
-        return render_template("registration.html", selected_role=role, error="Name, email, password, and department are required."), 400
-    if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
-        return render_template("registration.html", selected_role=role, error="Please enter a valid email address."), 400
-    if role == "student" and (not roll_number or not semester):
-        return render_template("registration.html", selected_role=role, error="Student registration requires roll number and semester."), 400
-    if User.query.filter_by(email=email).first():
-        return render_template("registration.html", selected_role=role, error="An account with this email already exists."), 400
-    if role == "student" and User.query.filter_by(roll_number=roll_number).first():
-        return render_template("registration.html", selected_role=role, error="An account with this roll number already exists."), 400
-    if role == "hod":
-        configured_key = os.environ.get("HOD_REGISTRATION_KEY", "admin123")
-        submitted_key = request.form.get("hod_access_key", "")
+    # if role not in {"student", "faculty", "hod"}:
+    #     return render_template("registration.html", selected_role="student", error="Please select a valid account type."), 400
+    # if not name or not email or not password or not department:
+    #     return render_template("registration.html", selected_role=role, error="Name, email, password, and department are required."), 400
+    # if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+    #     return render_template("registration.html", selected_role=role, error="Please enter a valid email address."), 400
+    # if role == "student" and (not roll_number or not semester):
+    #     return render_template("registration.html", selected_role=role, error="Student registration requires roll number and semester."), 400
+    # if User.query.filter_by(email=email).first():
+    #     return render_template("registration.html", selected_role=role, error="An account with this email already exists."), 400
+    # if role == "student" and User.query.filter_by(roll_number=roll_number).first():
+    #     return render_template("registration.html", selected_role=role, error="An account with this roll number already exists."), 400
+    # if role == "hod":
+    #     configured_key = os.environ.get("HOD_REGISTRATION_KEY", "admin123")
+    #     submitted_key = request.form.get("hod_access_key", "")
 
-        if not submitted_key or submitted_key != configured_key:
-            return render_template("registration.html", selected_role=role, error="A valid Admin/HOD access key is required."), 403
+    #     if not submitted_key or submitted_key != configured_key:
+    return render_template("registration.html", selected_role=role, error="A valid Admin/HOD access key is required."), 403
 
     user = User(
         name=name,
