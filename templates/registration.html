@@ -171,10 +171,10 @@
             </div>
 
             <nav class="dashboard-nav">
-                <a href="{{ url_for('hod_dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('hod.hod_dashboard') }}">Dashboard</a>
                 <a href="#" class="active">Account Registration</a>
-                <a href="{{ url_for('student_management') }}">Student Management</a>
-                <a href="{{ url_for('faculty') }}">Faculty Management</a>
+                <a href="{{ url_for('hod.student_management') }}">Student Management</a>
+                <a href="{{ url_for('hod.faculty_management') }}">Faculty Management</a>
                 <a href="#">Course / Subject Management</a>
                 <a href="#">Timetable Management</a>
                 <a href="#">Attendance Overview</a>
@@ -185,7 +185,7 @@
             </nav>
 
             <div class="dashboard-logout">
-                <a href="{{ url_for('logout') }}">Logout</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
             </div>
         </aside>
 
@@ -202,7 +202,7 @@
                         <small>Head of Department</small>
                     </div>
                 </div>
-                <a class="back-link" href="{{ url_for('hod_dashboard') }}">← Back to dashboard</a>
+                <a class="back-link" href="{{ url_for('hod.hod_dashboard') }}">← Back to dashboard</a>
             </header>
 
             <section class="registration-card" aria-labelledby="form-title">
@@ -225,13 +225,13 @@
                 </div>
 
                 <nav class="role-switcher" aria-label="Account type">
-                    <a href="{{ url_for('register', role='student') }}" class="{% if selected_role == 'student' %}selected{% endif %}">
+                    <a href="{{ url_for('auth.register', role='student') }}" class="{% if selected_role == 'student' %}selected{% endif %}">
                         <span class="role-letter">S</span> Student
                     </a>
-                    <a href="{{ url_for('register', role='faculty') }}" class="{% if selected_role == 'faculty' %}selected{% endif %}">
+                    <a href="{{ url_for('auth.register', role='faculty') }}" class="{% if selected_role == 'faculty' %}selected{% endif %}">
                         <span class="role-letter">F</span> Faculty
                     </a>
-                    <a href="{{ url_for('register', role='hod') }}" class="{% if selected_role == 'hod' %}selected{% endif %}">
+                    <a href="{{ url_for('auth.register', role='hod') }}" class="{% if selected_role == 'hod' %}selected{% endif %}">
                         <span class="role-letter">H</span> HOD
                     </a>
                 </nav>
@@ -247,7 +247,7 @@
                 </div>
                 {% endif %}
 
-                <form class="registration-form" method="POST" action="{{ url_for('register') }}" novalidate>
+                <form class="registration-form" method="POST" action="{{ url_for('auth.register') }}" novalidate>
                     <input type="hidden" name="role" value="{{ selected_role }}">
 
                     <div class="form-grid">
@@ -324,7 +324,7 @@
                     <div class="form-footer">
                         <p><span aria-hidden="true">⌁</span> Account details are visible only to authorised department staff.</p>
                         <div class="form-actions">
-                            <a class="cancel-button" href="{{ url_for('hod_dashboard') }}">Cancel</a>
+                            <a class="cancel-button" href="{{ url_for('hod.hod_dashboard') }}">Cancel</a>
                             <button type="submit" class="submit-button">Create {{ selected_role|title }} Account <span aria-hidden="true">→</span></button>
                         </div>
                     </div>

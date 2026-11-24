@@ -222,7 +222,7 @@
             <div class="quick-actions-grid">
 
                 <a class="quick-action action-blue"
-                   href="{{ url_for('register', role='student') }}">
+                   href="{{ url_for('auth.register', role='student') }}">
                     <span class="action-icon">＋</span>
                     <span class="action-copy">
                         <strong>Add Student</strong>
@@ -231,7 +231,7 @@
                 </a>
 
                 <a class="quick-action action-green"
-                   href="{{ url_for('register', role='faculty') }}">
+                   href="{{ url_for('auth.register', role='faculty') }}">
                     <span class="action-icon">＋</span>
                     <span class="action-copy">
                         <strong>Add Lecturer</strong>
@@ -240,7 +240,7 @@
                 </a>
 
                 <a class="quick-action action-orange"
-                   href="{{ url_for('student_management') }}">
+                   href="{{ url_for('hod.student_management') }}">
                     <span class="action-icon">▤</span>
                     <span class="action-copy">
                         <strong>Student Records</strong>
@@ -249,7 +249,7 @@
                 </a>
 
                 <a class="quick-action action-purple"
-                   href="{{ url_for('faculty') }}">
+                   href="{{ url_for('hod.faculty_management') }}">
                     <span class="action-icon">▣</span>
                     <span class="action-copy">
                         <strong>Faculty Management</strong>
@@ -258,7 +258,7 @@
                 </a>
 
                 <a class="quick-action action-slate"
-                   href="{{ url_for('register') }}">
+                   href="{{ url_for('auth.register') }}">
                     <span class="action-icon">＋</span>
                     <span class="action-copy">
                         <strong>Account Registration</strong>

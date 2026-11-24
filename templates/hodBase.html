@@ -22,16 +22,22 @@
 
         <nav>
 
-            <a href="{{ url_for('faculty') if session.get('user_role') == 'faculty' else url_for('hod_dashboard') }}" class="{{ 'active' if (request.endpoint == 'hod_dashboard' or (request.endpoint == 'faculty' and session.get('user_role') == 'faculty')) else '' }}">
+            <a href="{{ url_for('faculty.dashboard') if session.get('user_role') == 'faculty' else url_for('hod.hod_dashboard') }}"
+                class="{{ 'active' if (request.endpoint == 'hod.hod_dashboard' or request.endpoint == 'faculty.dashboard') else '' }}">
                 Dashboard
             </a>
-            <a href="{{ url_for('register') }}" class="{{ 'active' if request.endpoint == 'register' else '' }}">Account Registration</a>
+            {% if session.get('user_role', '').lower() == 'hod' %}
+            <a href="{{ url_for('auth.register') }}" class="{{ 'active' if request.endpoint == 'auth.register' else '' }}">Account
+                Registration</a>
+            {% endif %}
 
-            <a href="{{ url_for('student_management') }}" class="{{ 'active' if request.endpoint == 'student_management' else '' }}">
+            <a href="{{ url_for('hod.student_management') }}"
+                class="{{ 'active' if request.endpoint == 'hod.student_management' else '' }}">
                 Student Management
             </a>
 
-            <a href="{{ url_for('faculty') }}" class="{{ 'active' if request.endpoint == 'faculty' and session.get('user_role') != 'faculty' else '' }}">
+            <a href="{{ url_for('hod.faculty_management') }}"
+                class="{{ 'active' if request.endpoint == 'hod.faculty_management' else '' }}">
                 Faculty Management
             </a>
 
@@ -66,13 +72,14 @@
         </nav>
 
         <div class="logout">
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('auth.logout') }}">Logout</a>
         </div>
 
     </aside>
 
-   {%block content%} {%endblock%}
-  {% block scripts %}
+    {%block content%} {%endblock%}
+    {% block scripts %}
     {% endblock %}
 </body>
+
 </html>

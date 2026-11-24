@@ -56,9 +56,11 @@
             <button class="hero-btn" id="heroViewProfileBtn">
                 <span>👁</span> View My Profile
             </button>
-            <a href="{{ url_for('register', role='faculty') }}" class="hero-btn secondary">
+            {% if session.get('user_role', '').lower() == 'hod' %}
+            <a href="{{ url_for('auth.register', role='faculty') }}" class="hero-btn secondary">
                 <span>＋</span> Add New Faculty
             </a>
+            {% endif %}
         </div>
     </section>
 
@@ -143,9 +145,11 @@
                 <option value="Leave">On Leave</option>
             </select>
 
-            <a href="{{ url_for('register', role='faculty') }}" class="add-faculty-link">
+            {% if session.get('user_role', '').lower() == 'hod' %}
+            <a href="{{ url_for('auth.register', role='faculty') }}" class="add-faculty-link">
                 <span>＋</span> Add Faculty
             </a>
+            {% endif %}
         </div>
     </section>
 
