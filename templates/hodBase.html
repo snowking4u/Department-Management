@@ -53,7 +53,8 @@
                 Attendance Overview
             </a>
 
-            <a href="#">
+            <a href="{{ url_for('hod.notice_management') }}"
+                class="{{ 'active' if request.endpoint == 'hod.notice_management' else '' }}">
                 Notice Management
             </a>
 

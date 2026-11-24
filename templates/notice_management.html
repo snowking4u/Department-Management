@@ -1,0 +1,381 @@
+{% extends "hodBase.html" %}
+
+{% block title %}Notice Management | GPH{% endblock %}
+
+{% block stylesheets %}
+{{ url_for('static', filename='css/notice_management.css') }}
+{% endblock %}
+
+{% block content %}
+<main class="main-content notice-management-page">
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <span>COMPUTER ENGINEERING DEPARTMENT</span>
+        <div class="profile">
+            <span class="avatar">{{ (session.get('user_name', 'HOD')|first)|upper }}</span>
+            <span>{{ session.get('user_name', 'HOD') }}</span>
+        </div>
+    </header>
+
+    <!-- Flash Alerts -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alert-container">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              <span>{{ '✓' if category == 'success' else '⚠' }}</span> {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Page Heading -->
+    <section class="page-heading">
+        <div>
+            <h1>Notice Management</h1>
+            <p>Publish official announcements, circulars, and departmental notifications.</p>
+        </div>
+
+        <button type="button" class="btn-publish" id="openCreateNoticeBtn">
+            <span>＋</span> Publish New Notice
+        </button>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon blue">📢</div>
+            <div>
+                <p>Total Notices</p>
+                <h2>{{ total_notices }}</h2>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green">✓</div>
+            <div>
+                <p>Active Circulars</p>
+                <h2>{{ active_notices }}</h2>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon purple">🎓</div>
+            <div>
+                <p>For Students</p>
+                <h2>{{ student_notices }}</h2>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">👥</div>
+            <div>
+                <p>For Faculty</p>
+                <h2>{{ faculty_notices }}</h2>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter & Search Toolbar -->
+    <section class="toolbar-card">
+        <form method="GET" action="{{ url_for('hod.notice_management') }}" class="filter-form">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    name="q" 
+                    placeholder="Search notice by title or content..." 
+                    value="{{ current_q or '' }}"
+                >
+            </div>
+
+            <div class="filter-group">
+                <select name="category" onchange="this.form.submit()">
+                    <option value="All" {% if current_category == 'All' or not current_category %}selected{% endif %}>All Categories</option>
+                    <option value="Academic" {% if current_category == 'Academic' %}selected{% endif %}>Academic</option>
+                    <option value="Examination" {% if current_category == 'Examination' %}selected{% endif %}>Examination</option>
+                    <option value="Holiday" {% if current_category == 'Holiday' %}selected{% endif %}>Holiday</option>
+                    <option value="Urgent" {% if current_category == 'Urgent' %}selected{% endif %}>Urgent</option>
+                    <option value="Event" {% if current_category == 'Event' %}selected{% endif %}>Event</option>
+                    <option value="General" {% if current_category == 'General' %}selected{% endif %}>General</option>
+                </select>
+
+                <select name="audience" onchange="this.form.submit()">
+                    <option value="All" {% if current_audience == 'All' or not current_audience %}selected{% endif %}>All Audiences</option>
+                    <option value="Students" {% if current_audience == 'Students' %}selected{% endif %}>Students</option>
+                    <option value="Faculty" {% if current_audience == 'Faculty' %}selected{% endif %}>Faculty</option>
+                </select>
+
+                {% if current_q or (current_category and current_category != 'All') or (current_audience and current_audience != 'All') %}
+                <a href="{{ url_for('hod.notice_management') }}" class="btn-clear-filter">Reset</a>
+                {% endif %}
+            </div>
+        </form>
+    </section>
+
+    <!-- Notice Feed Section -->
+    <section class="notices-container">
+        {% if notices %}
+            <div class="notices-grid">
+                {% for notice in notices %}
+                <article class="notice-card {% if notice.is_pinned %}pinned-card{% endif %}">
+                    <div class="card-header">
+                        <div class="badges-row">
+                            <span class="badge badge-category badge-{{ notice.category|lower }}">{{ notice.category }}</span>
+                            <span class="badge badge-audience">
+                                {% if notice.target_audience == 'Students' %}🎓 Students
+                                {% elif notice.target_audience == 'Faculty' %}👥 Faculty
+                                {% else %}🌐 All (Students & Faculty){% endif %}
+                            </span>
+                            {% if notice.is_pinned %}
+                            <span class="badge badge-pinned">📌 Pinned</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="date-tag">
+                            {{ notice.created_at.strftime('%d %b %Y, %I:%M %p') }}
+                        </div>
+                    </div>
+
+                    <h3 class="notice-title">{{ notice.title }}</h3>
+                    
+                    <div class="notice-body">
+                        {{ notice.description }}
+                    </div>
+
+                    {% if notice.attachment_url %}
+                    <div class="notice-attachment">
+                        <a href="{{ notice.attachment_url }}" target="_blank" rel="noopener noreferrer">
+                            📎 View Attachment / Reference Link
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div class="card-footer">
+                        <div class="author-info">
+                            <span>Published by:</span>
+                            <strong>{{ notice.author_name }}</strong>
+                        </div>
+
+                        <div class="card-actions">
+                            <!-- Toggle Pin -->
+                            <form method="POST" action="{{ url_for('hod.toggle_pin', notice_id=notice.id) }}" style="display:inline;">
+                                <button type="submit" class="action-btn pin-btn" title="{{ 'Unpin Notice' if notice.is_pinned else 'Pin Notice to Top' }}">
+                                    {{ 'Unpin' if notice.is_pinned else 'Pin' }}
+                                </button>
+                            </form>
+
+                            <!-- Edit Trigger -->
+                            <button 
+                                type="button" 
+                                class="action-btn edit-btn" 
+                                onclick="openEditModal(
+                                    '{{ notice.id }}', 
+                                    '{{ notice.title|escape }}', 
+                                    '{{ notice.category }}', 
+                                    '{{ notice.target_audience }}', 
+                                    '{{ notice.attachment_url or '' }}', 
+                                    {{ 'true' if notice.is_pinned else 'false' }}, 
+                                    `{{ notice.description|replace('`', '\\`') }}`
+                                )"
+                            >
+                                Edit
+                            </button>
+
+                            <!-- Delete Trigger -->
+                            <form 
+                                method="POST" 
+                                action="{{ url_for('hod.delete_notice', notice_id=notice.id) }}" 
+                                style="display:inline;"
+                                onsubmit="return confirm('Are you sure you want to delete this notice? This action cannot be undone.');"
+                            >
+                                <button type="submit" class="action-btn delete-btn">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No Notices Found</h3>
+                <p>No departmental announcements match your criteria. Click below to publish the first notice.</p>
+                <button type="button" class="btn-publish" onclick="document.getElementById('openCreateNoticeBtn').click()">
+                    <span>＋</span> Publish Notice Now
+                </button>
+            </div>
+        {% endif %}
+    </section>
+
+</main>
+
+
+<!-- ========================================================================= -->
+<!-- CREATE NOTICE MODAL -->
+<!-- ========================================================================= -->
+<div class="modal-backdrop" id="createNoticeModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h2>Publish New Notice</h2>
+            <button type="button" class="btn-close" onclick="closeModal('createNoticeModal')">✕</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('hod.create_notice') }}" class="modal-form">
+            <div class="form-group">
+                <label for="noticeTitle">Notice Title <span class="required">*</span></label>
+                <input type="text" id="noticeTitle" name="title" required placeholder="e.g. Schedule for Mid-Term Examination 2026">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="noticeCategory">Category</label>
+                    <select id="noticeCategory" name="category">
+                        <option value="General">General</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Examination">Examination</option>
+                        <option value="Holiday">Holiday</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="Event">Event</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="noticeAudience">Target Audience</label>
+                    <select id="noticeAudience" name="target_audience">
+                        <option value="All">All (Students & Faculty)</option>
+                        <option value="Students">Students Only</option>
+                        <option value="Faculty">Faculty Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="noticeAttachment">Attachment Link / Document URL <span class="optional">(Optional)</span></label>
+                <input type="url" id="noticeAttachment" name="attachment_url" placeholder="https://drive.google.com/... or link to circular PDF">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_pinned" value="1">
+                    <span>📌 Pin this notice to the top of the feed</span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="noticeDescription">Notice Description / Content <span class="required">*</span></label>
+                <textarea id="noticeDescription" name="description" rows="5" required placeholder="Enter the complete notification details, instructions, or timetable here..."></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('createNoticeModal')">Cancel</button>
+                <button type="submit" class="btn-submit">Publish Notice</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- ========================================================================= -->
+<!-- EDIT NOTICE MODAL -->
+<!-- ========================================================================= -->
+<div class="modal-backdrop" id="editNoticeModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h2>Edit Department Notice</h2>
+            <button type="button" class="btn-close" onclick="closeModal('editNoticeModal')">✕</button>
+        </div>
+
+        <form method="POST" id="editNoticeForm" action="" class="modal-form">
+            <div class="form-group">
+                <label for="editTitle">Notice Title <span class="required">*</span></label>
+                <input type="text" id="editTitle" name="title" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" name="category">
+                        <option value="General">General</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Examination">Examination</option>
+                        <option value="Holiday">Holiday</option>
+                        <option value="Urgent">Urgent</option>
+                        <option value="Event">Event</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editAudience">Target Audience</label>
+                    <select id="editAudience" name="target_audience">
+                        <option value="All">All (Students & Faculty)</option>
+                        <option value="Students">Students Only</option>
+                        <option value="Faculty">Faculty Only</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="editAttachment">Attachment Link / Document URL <span class="optional">(Optional)</span></label>
+                <input type="url" id="editAttachment" name="attachment_url">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="editPinned" name="is_pinned" value="1">
+                    <span>📌 Pin this notice to the top of the feed</span>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="editDescription">Notice Description / Content <span class="required">*</span></label>
+                <textarea id="editDescription" name="description" rows="5" required></textarea>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal('editNoticeModal')">Cancel</button>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const createModal = document.getElementById('createNoticeModal');
+    const editModal = document.getElementById('editNoticeModal');
+    const openCreateBtn = document.getElementById('openCreateNoticeBtn');
+
+    openCreateBtn.addEventListener('click', () => {
+        createModal.classList.add('active');
+    });
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    function openEditModal(id, title, category, audience, attachment, isPinned, description) {
+        const form = document.getElementById('editNoticeForm');
+        form.action = `/notice-management/edit/${id}`;
+
+        document.getElementById('editTitle').value = title;
+        document.getElementById('editCategory').value = category;
+        document.getElementById('editAudience').value = audience;
+        document.getElementById('editAttachment').value = attachment || '';
+        document.getElementById('editPinned').checked = isPinned;
+        document.getElementById('editDescription').value = description;
+
+        editModal.classList.add('active');
+    }
+
+    // Close when clicking outside of dialog
+    window.addEventListener('click', (e) => {
+        if (e.target === createModal) closeModal('createNoticeModal');
+        if (e.target === editModal) closeModal('editNoticeModal');
+    });
+</script>
+{% endblock %}
+
